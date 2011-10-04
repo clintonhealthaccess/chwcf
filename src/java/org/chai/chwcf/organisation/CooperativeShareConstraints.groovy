@@ -35,6 +35,6 @@ constraints = {
 	cooperative(nullable: false, blank: false)
 	share(nullable: false, blank: false)
 	startDate(nullable: false, blank: false)
-	endDate(nullable: false, blank: false, , validator: { val, obj -> return val.after(obj.startDate)})
+	endDate(nullable: false, blank: false,validator: { val, obj -> return val.after(obj.startDate)})
 
 }

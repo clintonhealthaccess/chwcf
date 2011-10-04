@@ -25,16 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.organisation
+package org.chai.chwcf
 
 /**
  * @author Jean Kahigiso M.
  *
  */
-constraints = {
-    cooperative(nullable: false, blank: false)
-	score(nullable: false, blank: false, range: [0..100])
-	amountHCtoCoop(nullable: false, blank: false)
-	startDate(nullable: false, blank: false)
-	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
+constraints={
+ startDate(nullable:false, blank:false)
+ endDate(nullable: false, blank:false,validator: { val, obj -> return val.after(obj.startDate)})
 }
