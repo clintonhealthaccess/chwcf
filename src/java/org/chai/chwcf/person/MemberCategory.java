@@ -25,10 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.transaction;
+package org.chai.chwcf.person;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -37,25 +36,28 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 
 /**
  * @author Jean Kahigiso M.
- * 
+ *
  */
 @SuppressWarnings("serial")
-@Entity(name = "TransactionCategoryType")
-@Table(name = "chwcf_transaction_category_type")
-public class TransactionCategoryType extends Translatable {
-
+@Entity(name = "MemberCategory")
+@Table(name = "chwcf_member_category")
+public class MemberCategory extends Translatable {
+	
 	private Long id;
 	private Integer order;
-	private List<TransactionCategory> categories = new ArrayList<TransactionCategory>();
-
+	private List<Member> members = new ArrayList<Member>();
+	
+	
 	@Id
 	@GeneratedValue
 	public Long getId() {
@@ -65,7 +67,7 @@ public class TransactionCategoryType extends Translatable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
@@ -76,16 +78,17 @@ public class TransactionCategoryType extends Translatable {
 		this.order = order;
 	}
 
-	@OneToMany(targetEntity = TransactionCategory.class, mappedBy = "type")
-	@OrderBy(value = "order")
-	public List<TransactionCategory> getCategories() {
-		return categories;
+	public void setMembers(List<Member> members) {
+		this.members = members;
 	}
-
-	public void setCategories(List<TransactionCategory> categories) {
-		this.categories = categories;
+	
+    @OneToMany(targetEntity=Member.class, mappedBy="category")
+    @Cascade({CascadeType.MERGE})
+	public List<Member> getMembers() {
+		return members;
 	}
-
+    
+    
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -102,7 +105,7 @@ public class TransactionCategoryType extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TransactionCategoryType other = (TransactionCategoryType) obj;
+		MemberCategory other = (MemberCategory) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -110,19 +113,19 @@ public class TransactionCategoryType extends Translatable {
 			return false;
 		return true;
 	}
+	
+	
 
 	@Override
 	public String toString() {
-		return "TransactionCategoryType [id=" + id + ", names=" + names + "]";
+		return "HealthWorkerCategory [id=" + id + ", names=" + names + "]";
 	}
-	
-	
-	@Transient
-	public void addCategory(TransactionCategory category) {
-		category.setType(this);
-		categories.add(category);
-		Collections.sort(categories);
 
+	@Transient
+	public void addMember(Member member){
+		member.setCategory(this);
+		members.add(member);		
 	}
 	
+
 }

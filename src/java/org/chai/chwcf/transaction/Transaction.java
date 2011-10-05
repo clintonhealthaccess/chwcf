@@ -55,7 +55,7 @@ public class Transaction implements Serializable {
 	
 	private Long id;
 	private Cooperative cooperative;
-	private TransactionCategory category;
+	private Category category;
 	private Integer enteredBy;
 	private Date transactionDate;
 	private Date recordedDate;
@@ -83,13 +83,13 @@ public class Transaction implements Serializable {
 		this.cooperative = cooperative;
 	}
 
-	@ManyToOne(targetEntity = TransactionCategory.class, optional = false)
+	@ManyToOne(targetEntity = Category.class, optional = false)
 	@JoinColumn(nullable = false)
-	public TransactionCategory getCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setCategory(TransactionCategory category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 	

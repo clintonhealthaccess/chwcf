@@ -25,20 +25,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.organisation;
+package org.chai.chwcf.transaction;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
 
@@ -47,16 +48,13 @@ import org.chai.chwcf.Translatable;
  * 
  */
 @SuppressWarnings("serial")
-@Entity(name = "CooperativeShare")
-@Table(name = "chwcf_cooperative_share")
-public class CooperativeShare extends Translatable {
+@Entity(name = "CategoryType")
+@Table(name = "chwcf_category_type")
+public class CategoryType extends Translatable {
 
 	private Long id;
 	private Integer order;
-	private Date startDate;
-	private Date endDate;
-	private Integer share;
-	private Cooperative cooperative;
+	private List<Category> categories = new ArrayList<Category>();
 
 	@Id
 	@GeneratedValue
@@ -77,43 +75,15 @@ public class CooperativeShare extends Translatable {
 	public void setOrder(Integer order) {
 		this.order = order;
 	}
-	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getStartDate() {
-		return startDate;
+
+	@OneToMany(targetEntity = Category.class, mappedBy = "type")
+	@OrderBy(value = "order")
+	public List<Category> getCategories() {
+		return categories;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
-	public void setShare(Integer share) {
-		this.share = share;
-	}
-
-	public Integer getShare() {
-		return share;
-	}
-
-	@ManyToOne(targetEntity = Cooperative.class, optional = false)
-	@JoinColumn(nullable = false)
-	public Cooperative getCooperative() {
-		return cooperative;
-	}
-
-	public void setCooperative(Cooperative cooperative) {
-		this.cooperative = cooperative;
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
 	}
 
 	@Override
@@ -132,7 +102,7 @@ public class CooperativeShare extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CooperativeShare other = (CooperativeShare) obj;
+		CategoryType other = (CategoryType) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -143,8 +113,16 @@ public class CooperativeShare extends Translatable {
 
 	@Override
 	public String toString() {
-		return "CooperativeShare [id=" + id + ", share=" + share
-				+ ", cooperative=" + cooperative + ", names=" + names + "]";
+		return "TransactionCategoryType [id=" + id + ", names=" + names + "]";
 	}
+	
+	
+	@Transient
+	public void addCategory(Category category) {
+		category.setType(this);
+		categories.add(category);
+		Collections.sort(categories);
 
+	}
+	
 }

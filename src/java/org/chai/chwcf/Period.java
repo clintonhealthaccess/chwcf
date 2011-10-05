@@ -25,95 +25,68 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.person;
+package org.chai.chwcf;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.chai.chwcf.HealthWorkerCategory;
-import org.chai.chwcf.organisation.Cooperative;
-
 /**
  * @author Jean Kahigiso M.
- * 
+ *
  */
 @SuppressWarnings("serial")
-@Entity(name = "CooperativeMember")
-@Table(name = "chwcf_cooperative_member")
-public class CooperativeMember extends Person {
-
+@Entity(name = "ChwcfPeriod")
+@Table(name = "chwcf_period")
+public class Period extends Translatable{
+	
 	private Long id;
-	private Integer idNumber;
-	private Cooperative cooperative;
-	private Date joinDate;
-	private Date leftDate;
-	private HealthWorkerCategory category;
-
+	private Integer order;
+	private Date startDate;
+	private Date endDate;
+	
 	@Id
 	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
-	public void setIdNumber(Integer idNumber) {
-		this.idNumber = idNumber;
-	}
-
-	public Integer getIdNumber() {
-		return idNumber;
-	}
-
-	public void setCooperative(Cooperative cooperative) {
-		this.cooperative = cooperative;
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 	
-	@ManyToOne(targetEntity = Cooperative.class, optional = false)
-	@JoinColumn(nullable = false)
-	public Cooperative getCooperative() {
-		return cooperative;
+	@Basic(optional = true)
+	@Column(name = "ordering")
+	public Integer getOrder() {
+		return order;
 	}
 	
 	@Basic(optional = false)
 	@Temporal(TemporalType.DATE)
-	public Date getJoinDate() {
-		return joinDate;
+	public Date getStartDate() {
+		return startDate;
 	}
-
-	public void setJoinDate(Date joinDate) {
-		this.joinDate = joinDate;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	
-	@Basic(optional = true)
+	@Basic(optional = false)
 	@Temporal(TemporalType.DATE)
-	public Date getLeftDate() {
-		return leftDate;
+	public Date getEndDate() {
+		return endDate;
 	}
-
-	public void setLeftDate(Date leftDate) {
-		this.leftDate = leftDate;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
-
-	public HealthWorkerCategory getCategory() {
-		return category;
-	}
-
-	public void setCategory(HealthWorkerCategory category) {
-		this.category = category;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -121,7 +94,6 @@ public class CooperativeMember extends Person {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -130,7 +102,7 @@ public class CooperativeMember extends Person {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CooperativeMember other = (CooperativeMember) obj;
+		Period other = (Period) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -138,11 +110,11 @@ public class CooperativeMember extends Person {
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "CooperativeMember [id=" + id + ", cooperative=" + cooperative
-				+ ", category=" + category + "]";
+		return "ChwcfPeriod [id=" + id + ", startDate=" + startDate
+				+ ", endDate=" + endDate + "]";
 	}
 	
 	

@@ -25,20 +25,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf;
-
-import java.util.Comparator;
-import org.chai.chwcf.Period;
-
+package org.chai.chwcf.organisation
 
 /**
  * @author Jean Kahigiso M.
  *
  */
-public class PeriodSorter implements Comparator<Period> {
-	@Override
-	public int compare(Period periodOne, Period periodTwo) {
-		return periodTwo.getStartDate().compareTo(periodOne.getStartDate());
-	}
-
+constraints = {
+    cooperative(nullable: false, blank: false)
+	score(nullable: false, blank: false, min: 0, max: 100)
+	amountHCtoCoop(nullable: false, blank: false)
+	startDate(nullable: false, blank: false)
+	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
 }

@@ -47,9 +47,9 @@ import org.chai.chwcf.Translatable;
  *
  */
 @SuppressWarnings("serial")
-@Entity(name="CooperativePbfScore")
-@Table(name="chwcf_cooperative_pbf_score")
-public class CooperativePbfScore extends Translatable {
+@Entity(name="PbfScore")
+@Table(name="chwcf_pbf_score")
+public class PbfScore extends Translatable {
 	
 	private Long id;
 	private Integer order;
@@ -135,7 +135,7 @@ public class CooperativePbfScore extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CooperativePbfScore other = (CooperativePbfScore) obj;
+		PbfScore other = (PbfScore) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

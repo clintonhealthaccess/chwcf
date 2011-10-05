@@ -25,39 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf;
+package org.chai.chwcf.organisation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.chai.chwcf.person.CooperativeMember;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
+import org.chai.chwcf.Translatable;
 
 /**
  * @author Jean Kahigiso M.
- *
+ * 
  */
 @SuppressWarnings("serial")
-@Entity(name = "HealthWorkerCategory")
-@Table(name = "chwcf_health_worker_category")
-public class HealthWorkerCategory extends Translatable {
-	
+@Entity(name = "Share")
+@Table(name = "chwcf_share")
+public class Share extends Translatable {
+
 	private Long id;
 	private Integer order;
-	private List<CooperativeMember> members = new ArrayList<CooperativeMember>();
-	
-	
+	private Date startDate;
+	private Date endDate;
+	private Integer share;
+	private Cooperative cooperative;
+
 	@Id
 	@GeneratedValue
 	public Long getId() {
@@ -67,7 +67,7 @@ public class HealthWorkerCategory extends Translatable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
@@ -77,18 +77,45 @@ public class HealthWorkerCategory extends Translatable {
 	public void setOrder(Integer order) {
 		this.order = order;
 	}
+	
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
+	public Date getStartDate() {
+		return startDate;
+	}
 
-	public void setMembers(List<CooperativeMember> members) {
-		this.members = members;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	
-    @OneToMany(targetEntity=CooperativeMember.class, mappedBy="category")
-    @Cascade({CascadeType.MERGE})
-	public List<CooperativeMember> getMembers() {
-		return members;
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
+	public Date getEndDate() {
+		return endDate;
 	}
-    
-    
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public void setShare(Integer share) {
+		this.share = share;
+	}
+
+	public Integer getShare() {
+		return share;
+	}
+
+	@ManyToOne(targetEntity = Cooperative.class, optional = false)
+	@JoinColumn(nullable = false)
+	public Cooperative getCooperative() {
+		return cooperative;
+	}
+
+	public void setCooperative(Cooperative cooperative) {
+		this.cooperative = cooperative;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -105,7 +132,7 @@ public class HealthWorkerCategory extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		HealthWorkerCategory other = (HealthWorkerCategory) obj;
+		Share other = (Share) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -113,19 +140,11 @@ public class HealthWorkerCategory extends Translatable {
 			return false;
 		return true;
 	}
-	
-	
 
 	@Override
 	public String toString() {
-		return "HealthWorkerCategory [id=" + id + ", names=" + names + "]";
+		return "CooperativeShare [id=" + id + ", share=" + share
+				+ ", cooperative=" + cooperative + ", names=" + names + "]";
 	}
-
-	@Transient
-	public void addMember(CooperativeMember member){
-		member.setCategory(this);
-		members.add(member);		
-	}
-	
 
 }

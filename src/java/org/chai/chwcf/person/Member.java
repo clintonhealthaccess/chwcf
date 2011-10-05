@@ -25,10 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.transaction;
+package org.chai.chwcf.person;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -37,26 +36,33 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.chai.chwcf.Translatable;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+import org.chai.chwcf.organisation.Cooperative;
 
 /**
  * @author Jean Kahigiso M.
  * 
  */
 @SuppressWarnings("serial")
-@Entity(name = "TransactionCategory")
-@Table(name = "chwcf_transaction_category")
-public class TransactionCategory extends Translatable {
+@Entity(name = "Member")
+@Table(name = "chwcf_member")
+public class Member extends Person {
+	
+	public enum Gender {
+		MALE, FEMALE, UNKNOWN
+	};
+
 	private Long id;
-	private Integer order;
-	private TransactionCategoryType type;
-	private List<Transaction> transactions = new ArrayList<Transaction>();
+	private Integer idNumber;
+	private Cooperative cooperative;
+	private Date joinDate;
+	private Date leftDate;
+	private MemberCategory category;
+	private Date dob;
+	private Gender gender;
 
 	@Id
 	@GeneratedValue
@@ -68,34 +74,68 @@ public class TransactionCategory extends Translatable {
 		this.id = id;
 	}
 
-	@Basic(optional = true)
-	@Column(name = "ordering")
-	public Integer getOrder() {
-		return order;
+	public void setIdNumber(Integer idNumber) {
+		this.idNumber = idNumber;
+	}
+    @Basic(optional=false)
+    @Column(nullable=false)
+	public Integer getIdNumber() {
+		return idNumber;
 	}
 
-	public void setOrder(Integer order) {
-		this.order = order;
+	public void setCooperative(Cooperative cooperative) {
+		this.cooperative = cooperative;
 	}
 
-	@ManyToOne(targetEntity = TransactionCategoryType.class, optional = false)
+	@ManyToOne(targetEntity = Cooperative.class, optional = false)
 	@JoinColumn(nullable = false)
-	public TransactionCategoryType getType() {
-		return type;
+	public Cooperative getCooperative() {
+		return cooperative;
 	}
 
-	public void setType(TransactionCategoryType type) {
-		this.type = type;
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
+	public Date getJoinDate() {
+		return joinDate;
 	}
 
-	public void setTransactions(List<Transaction> transactions) {
-		this.transactions = transactions;
+	public void setJoinDate(Date joinDate) {
+		this.joinDate = joinDate;
 	}
 
-	@OneToMany(targetEntity = Transaction.class, mappedBy = "category")
-	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
-	public List<Transaction> getTransactions() {
-		return transactions;
+	@Basic(optional = true)
+	@Temporal(TemporalType.DATE)
+	public Date getLeftDate() {
+		return leftDate;
+	}
+
+	public void setLeftDate(Date leftDate) {
+		this.leftDate = leftDate;
+	}
+
+	public MemberCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(MemberCategory category) {
+		this.category = category;
+	}
+    @Basic(optional=false)
+    @Temporal(TemporalType.DATE)
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+    @Column(nullable=false)
+	public Gender getGender() {
+		return gender;
 	}
 
 	@Override
@@ -114,7 +154,7 @@ public class TransactionCategory extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TransactionCategory other = (TransactionCategory) obj;
+		Member other = (Member) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -125,13 +165,8 @@ public class TransactionCategory extends Translatable {
 
 	@Override
 	public String toString() {
-		return "TransactionCategory [id=" + id + ", type=" + type + "]";
-	}
-
-	@Transient
-	public void addTransaction(Transaction transaction) {
-		transaction.setCategory(this);
-		transactions.add(transaction);
+		return "CooperativeMember [id=" + id + ", cooperative=" + cooperative
+				+ ", category=" + category + "]";
 	}
 
 }

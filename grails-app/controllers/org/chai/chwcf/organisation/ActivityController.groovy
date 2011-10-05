@@ -25,20 +25,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf;
+package org.chai.chwcf.organisation
 
-import java.util.Comparator;
-import org.chai.chwcf.Period;
-
+import org.chai.chwcf.AbstractEntityController;
 
 /**
  * @author Jean Kahigiso M.
  *
  */
-public class PeriodSorter implements Comparator<Period> {
-	@Override
-	public int compare(Period periodOne, Period periodTwo) {
-		return periodTwo.getStartDate().compareTo(periodOne.getStartDate());
+class ActivityController extends AbstractEntityController {
+	
+	def getEntity(def id){
+		return Activity.get(id);
+	}
+	def createEntity(){
+		return new Activity();
+	}
+	def getModel(def entity) {
+		
+		[
+			]
+	}
+
+	def getTemplate() {
+		return "/organisation/create/activity"
+	}
+	def validateEntity(def entity) {
+		return entity.validate()
+	}
+
+	def saveEntity(def entity) {
+		entity.save();
+	}
+	def deleteEntity(def entity) {
+		entity.delete()
+	}
+	def bindParams(def entity) {
+		entity.properties = params
+	}
+	
+	def list = {
+		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 100)
+		params.offset = params.offset ? params.int('offset'): 0
+		
+		List<Activity> activities = Activity.list();
+		
+		render (view: '/organisation/admin/list', model:[
+			template:"activities",
+			entities:activities,
+			entityCount: Activity.count(),
+			code:"activity.label"
+			])
 	}
 
 }

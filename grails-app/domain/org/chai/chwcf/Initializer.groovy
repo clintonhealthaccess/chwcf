@@ -43,36 +43,20 @@ import org.hisp.dhis.period.PeriodType;
 import org.apache.shiro.crypto.hash.Sha256Hash
 import org.chai.chwcf.organisation.Activity
 import org.chai.chwcf.organisation.Cooperative;
-import org.chai.chwcf.organisation.CooperativePbfScore
-import org.chai.chwcf.organisation.CooperativeShare
+import org.chai.chwcf.organisation.PbfScore
+import org.chai.chwcf.organisation.Share
 import org.chai.chwcf.organisation.RegistrationLevel;
 import org.chai.chwcf.Translation;
 import org.chai.chwcf.security.ShiroUser
 import org.chai.chwcf.transaction.Transaction;
-import org.chai.chwcf.transaction.TransactionCategory;
-import org.chai.chwcf.transaction.TransactionCategoryType;
+import org.chai.chwcf.transaction.Category;
+import org.chai.chwcf.transaction.CategoryType;
 import org.chai.chwcf.utils.JSONUtils;
 
 class Initializer {
-	
-	static Date mar01 = getDate( 2005, 3, 1 );
-	static Date mar31 = getDate( 2005, 3, 31 );
-	static Date mar011 = getDate( 2006, 3, 1 );
-	static Date mar311 = getDate( 2006, 3, 31 );
-	
+		
 	static def createStructure(){
-		
-		if (!Period.count()) {
-			// periods
-			def monthly = new MonthlyPeriodType();
-			monthly.save(failOnError: true)
-			def period = new Period(periodType: monthly, startDate: mar01, endDate: mar31)
-			period.save(failOnError: true)
-
-			def period2 = new Period(periodType: monthly, startDate: mar011, endDate: mar311)
-			period2.save(failOnError: true, flush: true)
-		}
-		
+				
 		if (!OrganisationUnit.count()) {
 			// organisation level
 			new OrganisationUnitLevel(level: 1, name:"Country").save(failOnError: true)
@@ -143,9 +127,11 @@ class Initializer {
 	}
 	
 	static def createUser(){
-		def user = new ShiroUser(username: "admin", passwordHash: new Sha256Hash("kamsfany").toHex())
-		user.addToPermissions("*:*")
-		user.save()	
+		def admin = new ShiroUser(username: "admin", passwordHash: new Sha256Hash("kamsfany").toHex())
+		def user = new ShiroUser(username: "user", passwordHash: new Sha256Hash("kamsfany").toHex())
+		admin.addToPermissions("*:*")
+		admin.save()
+		user.save()
 	}
 	
 	static def createTransaction(){
@@ -168,9 +154,9 @@ class Initializer {
 			def regLevel3 = new RegistrationLevel(names:j(["en":"Sector","fr":"Secteur"]), descriptions:j([:]),order: 3)
 			def regLevel2 = new RegistrationLevel(names:j(["en":"District","fr":"District"]), descriptions:j([:]),order: 2)
 			
-			regLevel1.save(ailOnError: true, flush:true)
-			regLevel3.save(ailOnError: true, flush:true)
-			regLevel2.save(ailOnError: true, flush:true)
+			regLevel1.save(failOnError: true, flush:true)
+			regLevel3.save(failOnError: true, flush:true)
+			regLevel2.save(failOnError: true, flush:true)
 			
 			//Type of Activity
 			def liveStock = new Activity(names:j(["en":"Live Stock","fr":"BŽtail"]), descriptions:j([:]),order: 1)
@@ -189,10 +175,10 @@ class Initializer {
 			
 			
 			//Cooparative scores
-			def kivuyeScore1 = new CooperativePbfScore(names:j(["en":"Kivuye Score 1","fr":"Kivuye Score 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:67);
-			def kivuyeScore2 = new CooperativePbfScore(names:j(["en":"Kivuye Score 2","fr":"Kivuye Score 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:70);
-			def kivuyeShare1 = new CooperativeShare(names:j(["en":"Kivuye Share 1","fr":"Kivuye Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:20000);
-			def kivuyeShare2 = new CooperativeShare(names:j(["en":"Kivuye Share 2","fr":"Kivuye Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:21000);
+			def kivuyeScore1 = new PbfScore(names:j(["en":"Kivuye Score 1","fr":"Kivuye Score 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:67,amountHCtoCoop:204000);
+			def kivuyeScore2 = new PbfScore(names:j(["en":"Kivuye Score 2","fr":"Kivuye Score 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:70,amountHCtoCoop:104000);
+			def kivuyeShare1 = new Share(names:j(["en":"Kivuye Share 1","fr":"Kivuye Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:20000);
+			def kivuyeShare2 = new Share(names:j(["en":"Kivuye Share 2","fr":"Kivuye Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:21000);
 			
 			def kivuyeCoop = new Cooperative(
 				name:"Kivuye HC Cooperative", 
@@ -218,10 +204,10 @@ class Initializer {
 			kivuyeCoop.save(failOnError: true, flush:true)
 			
 			
-			def gitareScore1 = new CooperativePbfScore(names:j(["en":"Gitare Score 1","fr":"Gitare Score 1 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:62);
-			def gitareScore2 = new CooperativePbfScore(names:j(["en":"Gitare Score 2","fr":"Gitare Score 2 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:80);
-			def gitareShare1 = new CooperativeShare(names:j(["en":"Gitare Share 1","fr":"Gitaree Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:22000);
-			def gitareShare2 = new CooperativeShare(names:j(["en":"Gitare Share 2","fr":"Gitare Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:24000);
+			def gitareScore1 = new PbfScore(names:j(["en":"Gitare Score 1","fr":"Gitare Score 1 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:62,amountHCtoCoop:176000);
+			def gitareScore2 = new PbfScore(names:j(["en":"Gitare Score 2","fr":"Gitare Score 2 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:80,amountHCtoCoop:221000);
+			def gitareShare1 = new Share(names:j(["en":"Gitare Share 1","fr":"Gitaree Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:22000);
+			def gitareShare2 = new Share(names:j(["en":"Gitare Share 2","fr":"Gitare Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:24000);
 			 
 			 def gitareCoop = new Cooperative(
 				 name:"Gitare HC Cooperative",
@@ -258,25 +244,25 @@ class Initializer {
 			
 			
 			//Transaction Category Type
-			def expense = new TransactionCategoryType(names:j(["en":"Expense","fr":"Depense"]), descriptions:j([:]),order: 2);
-			def income = new TransactionCategoryType(names:j(["en":"Income","fr":"Revenu"]), descriptions:j([:]),order: 1);
-			def bankTransaction = new TransactionCategoryType(names:j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]), descriptions:j([:]),order: 1);
+			def expense = new CategoryType(names:j(["en":"Expense","fr":"Depense"]), descriptions:j([:]),order: 2);
+			def income = new CategoryType(names:j(["en":"Income","fr":"Revenu"]), descriptions:j([:]),order: 1);
+			def bankTransaction = new CategoryType(names:j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]), descriptions:j([:]),order: 1);
 			
 			//Transaction Category
 			
 			//Expenses
-			def accountPayable = new TransactionCategory(names:j(["en":"Account Payable","fr":"Account Payable fr"]), descriptions:j([:]),type: expense,order: 3);
-			def feedChicken = new TransactionCategory(names:j(["en":"Feed Chicken","fr":"Feed Chicken fr"]), descriptions:j([:]),type: expense,order: 1);
-			def feedLivestock = new TransactionCategory(names:j(["en":"Feed LiveStock","fr":"Feed LiveStockn fr"]), descriptions:j([:]),type: expense,order: 2);
+			def accountPayable = new Category(names:j(["en":"Account Payable","fr":"Account Payable fr"]), descriptions:j([:]),type: expense,order: 3);
+			def feedChicken = new Category(names:j(["en":"Feed Chicken","fr":"Feed Chicken fr"]), descriptions:j([:]),type: expense,order: 1);
+			def feedLivestock = new Category(names:j(["en":"Feed LiveStock","fr":"Feed LiveStockn fr"]), descriptions:j([:]),type: expense,order: 2);
 			
 			//Incomes
-			def communityPbf = new TransactionCategory(names:j(["en":"Community Pbf","fr":"Community Pbf fr"]), descriptions:j([:]),type: income,order: 3);
-			def salesPrimary = new TransactionCategory(names:j(["en":"Sales Primary","fr":"Sales Primary fr"]), descriptions:j([:]),type: income,order: 1);
-			def salesSecondary = new TransactionCategory(names:j(["en":"Sales Secondary","fr":"Sales Secondary fr"]), descriptions:j([:]),type: income,order: 2);
+			def communityPbf = new Category(names:j(["en":"Community Pbf","fr":"Community Pbf fr"]), descriptions:j([:]),type: income,order: 3);
+			def salesPrimary = new Category(names:j(["en":"Sales Primary","fr":"Sales Primary fr"]), descriptions:j([:]),type: income,order: 1);
+			def salesSecondary = new Category(names:j(["en":"Sales Secondary","fr":"Sales Secondary fr"]), descriptions:j([:]),type: income,order: 2);
 			
 			//Bank Transactions
-			def bankTransfer = new TransactionCategory(names:j(["en":"Bank Transfer","fr":"Bank Transferf fr"]), descriptions:j([:]),type: income,order: 3);
-			def bankWithdraw = new TransactionCategory(names:j(["en":"Bank Withdraw","fr":"Bank Withdraw fr"]), descriptions:j([:]),type: income,order: 1);
+			def bankTransfer = new Category(names:j(["en":"Bank Transfer","fr":"Bank Transferf fr"]), descriptions:j([:]),type: income,order: 3);
+			def bankWithdraw = new Category(names:j(["en":"Bank Withdraw","fr":"Bank Withdraw fr"]), descriptions:j([:]),type: income,order: 1);
 			
 			
 			expense.addCategory(accountPayable)
@@ -307,6 +293,7 @@ class Initializer {
 				description:"Transaction 1",
 				amount:23000
 				);
+			transaction1.save(failOnError: true, flush:true)
 			
 			
 

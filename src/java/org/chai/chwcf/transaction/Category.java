@@ -25,68 +25,79 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf;
+package org.chai.chwcf.transaction;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.chai.chwcf.Translatable;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Jean Kahigiso M.
- *
+ * 
  */
 @SuppressWarnings("serial")
-@Entity(name = "ChwcfPeriod")
-@Table(name = "chwcf_period")
-public class ChwcfPeriod extends Translatable{
-	
+@Entity(name = "Category")
+@Table(name = "chwcf_category")
+public class Category extends Translatable {
 	private Long id;
 	private Integer order;
-	private Date startDate;
-	private Date endDate;
-	
+	private CategoryType type;
+	private List<Transaction> transactions = new ArrayList<Transaction>();
+
 	@Id
 	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
-	
+
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
 		return order;
 	}
-	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getStartDate() {
-		return startDate;
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+
+	@ManyToOne(targetEntity = CategoryType.class, optional = false)
+	@JoinColumn(nullable = false)
+	public CategoryType getType() {
+		return type;
 	}
-	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getEndDate() {
-		return endDate;
+
+	public void setType(CategoryType type) {
+		this.type = type;
 	}
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
 	}
+
+	@OneToMany(targetEntity = Transaction.class, mappedBy = "category")
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -94,6 +105,7 @@ public class ChwcfPeriod extends Translatable{
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -102,7 +114,7 @@ public class ChwcfPeriod extends Translatable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ChwcfPeriod other = (ChwcfPeriod) obj;
+		Category other = (Category) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -110,13 +122,16 @@ public class ChwcfPeriod extends Translatable{
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "ChwcfPeriod [id=" + id + ", startDate=" + startDate
-				+ ", endDate=" + endDate + "]";
+		return "TransactionCategory [id=" + id + ", type=" + type + "]";
 	}
-	
-	
+
+	@Transient
+	public void addTransaction(Transaction transaction) {
+		transaction.setCategory(this);
+		transactions.add(transaction);
+	}
 
 }
