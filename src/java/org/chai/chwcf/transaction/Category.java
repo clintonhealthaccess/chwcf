@@ -28,6 +28,7 @@
 package org.chai.chwcf.transaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -36,12 +37,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
+import org.chai.chwcf.reports.CostingType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -56,6 +60,7 @@ public class Category extends Translatable {
 	private Long id;
 	private Integer order;
 	private CategoryType type;
+	private List<CostingType> costingTypes = new ArrayList<CostingType>(); 
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 
 	@Id
@@ -88,12 +93,21 @@ public class Category extends Translatable {
 		this.type = type;
 	}
 
+	public void setCostingTypes(List<CostingType> costingTypes) {
+		this.costingTypes = costingTypes;
+	}
+    @ManyToMany(targetEntity=CostingType.class)
+    @OrderBy(value = "order")
+	public List<CostingType> getCostingTypes() {
+		return costingTypes;
+	}
+
 	public void setTransactions(List<Transaction> transactions) {
 		this.transactions = transactions;
 	}
 
 	@OneToMany(targetEntity = Transaction.class, mappedBy = "category")
-	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
+	@Cascade({ CascadeType.ALL,CascadeType.DELETE })
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}
@@ -132,6 +146,12 @@ public class Category extends Translatable {
 	public void addTransaction(Transaction transaction) {
 		transaction.setCategory(this);
 		transactions.add(transaction);
+	}
+	@Transient
+	public void addCostingType(CostingType costingType){
+		costingType.addCategory(this);
+		costingTypes.add(costingType);
+		Collections.sort(costingTypes);
 	}
 
 }

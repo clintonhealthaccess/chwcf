@@ -27,14 +27,24 @@
  */
 package org.chai.chwcf.reports;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
+import org.chai.chwcf.transaction.Category;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Jean Kahigiso M.
@@ -47,6 +57,7 @@ public class CostingType extends Translatable {
 	
 	private Long id;
 	private Integer order;
+	private List<Category> categories = new ArrayList<Category>(); 
 	
 	@Id
 	@GeneratedValue
@@ -65,6 +76,15 @@ public class CostingType extends Translatable {
 		return order;
 	}
 	
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+	@ManyToMany(targetEntity=Category.class, mappedBy="costingTypes")
+	@Cascade({ CascadeType.PERSIST, CascadeType.MERGE }) 
+	@OrderBy(value = "order")
+	public List<Category> getCategories() {
+		return categories;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -93,6 +113,12 @@ public class CostingType extends Translatable {
 	@Override
 	public String toString() {
 		return "CostingType [id=" + id + ", names=" + names + "]";
+	}
+	@Transient
+	public void addCategory(Category category){
+		categories.add(category);
+		Collections.sort(categories);
+		
 	}
 	
 	

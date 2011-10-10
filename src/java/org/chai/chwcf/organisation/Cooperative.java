@@ -137,7 +137,7 @@ public class Cooperative implements Serializable{
 		this.registrationLevel = registrationLevel;
 	}
 	
-	@ManyToOne(targetEntity = RegistrationLevel.class, optional = true)
+	@ManyToOne(targetEntity = RegistrationLevel.class, optional = false)
 	@JoinColumn(nullable = true)
 	public RegistrationLevel getRegistrationLevel() {
 		return registrationLevel;

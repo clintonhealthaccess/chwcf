@@ -42,6 +42,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Jean Kahigiso M.
@@ -77,6 +79,7 @@ public class CategoryType extends Translatable {
 	}
 
 	@OneToMany(targetEntity = Category.class, mappedBy = "type")
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
 	@OrderBy(value = "order")
 	public List<Category> getCategories() {
 		return categories;

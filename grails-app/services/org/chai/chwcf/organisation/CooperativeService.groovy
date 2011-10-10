@@ -27,82 +27,50 @@
  */
 package org.chai.chwcf.organisation
 
-import org.chai.chwcf.AbstractEntityController;
-import org.chai.chwcf.CooperativeSorter
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import org.chai.chwcf.organisation.Organisation;
-import org.chai.chwcf.organisation.OrganisationService;
-import org.chai.chwcf.organisation.CooperativeService;
+import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.organisationunit.OrganisationUnit
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.chai.chwcf.organisation.Cooperative;
+import org.chai.chwcf.organisation.OrganisationService;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 /**
  * @author Jean Kahigiso M.
  *
  */
 @SuppressWarnings("deprecation")
-class CooperativeController extends AbstractEntityController {
+class CooperativeService {
 	def log = GroovyLog.newInstance("LogExample");
+	static transactional = true;
+	def localeService;
+	def sessionFactory;
+	
 	OrganisationService organisationService;
-	CooperativeService cooperativeService;
+	OrganisationUnitService organisationUnitService;
+	int facilityLevel = ConfigurationHolder.config.facility.level;
 
-	def getEntity(def id){
-		return Cooperative.get(id);
+
+	List<Cooperative> getCooperative(OrganisationUnit district){
+		List<Cooperative> cooperatives = new ArrayList<Cooperative>();
+		Set<OrganisationUnit> facilities = organisationUnitService.getOrganisationUnitsAtLevel(facilityLevel, district);	
+			
+		for(OrganisationUnit facility:facilities)
+			cooperatives.addAll(this.getCooperativeOfFacility(facility))
+			
+		return cooperatives;
 	}
-	def createEntity(){
-		def entity = new Cooperative();
-		if(!params['facilityId']) entity.organisationUnit = OrganisationUnit.get(params.int('facilityId'));
-		return entity;
-	}
-	def getModel(def entity) {
+	
+	List<Cooperative> getCooperativeOfFacility(OrganisationUnit facility){
+		List<Cooperative> cooperatives = new ArrayList<Cooperative>();
+		List<Cooperative> allCooperatives = this.getAllCooperatives();		
 		
-		[ 
-			cooperative: entity,
-			activities: Activity.list(),
-			levels: RegistrationLevel.list()
-			]
+		for(Cooperative cooperative: allCooperatives)
+			if(cooperative.getOrganisationUnit().equals(facility))
+				cooperatives.add(cooperative)
+		return cooperatives;
 	}
 
-	def getTemplate() {
-		return "/admin/organisation/createCooperative"
-	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
-	def bindParams(def entity) {
-		entity.properties = params
-	}
-
-	def list = {
-
-		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
-		params.offset = params.offset ? params.int('offset'): 0
-
-		OrganisationUnit district = OrganisationUnit.get(params.int('districtId'));
-		log.sayHello("District====>"+district)
-
-		List<Cooperative> cooperatives = cooperativeService.getCooperative(district)
-		Collections.sort(cooperatives, new CooperativeSorter());
-
-		def max = Math.min(params['offset']+params['max'],cooperatives.size())
-
-		render (view: '/admin/list', model:[
-					template: "organisation/listCooperatives",
-					entities: cooperatives.subList(params['offset'], max),
-					entityCount: cooperatives.size(),
-					entityName: "Cooperative",
-					code: "admin.cooperative.label"
-				])
+	List<Cooperative> getAllCooperatives(){
+		return Cooperative.list();
 	}
 }
-
-
-
-
-

@@ -32,6 +32,7 @@ package org.chai.chwcf
  *
  */
 import java.util.Date;
+import org.apache.log4j.*
 
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
@@ -40,13 +41,16 @@ import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
+import org.apache.commons.logging.Log;
 import org.apache.shiro.crypto.hash.Sha256Hash
 import org.chai.chwcf.organisation.Activity
 import org.chai.chwcf.organisation.Cooperative;
 import org.chai.chwcf.organisation.PbfScore
 import org.chai.chwcf.organisation.Share
 import org.chai.chwcf.organisation.RegistrationLevel;
+import org.chai.chwcf.person.MemberCategory
 import org.chai.chwcf.Translation;
+import org.chai.chwcf.reports.CostingType
 import org.chai.chwcf.security.ShiroUser
 import org.chai.chwcf.transaction.Transaction;
 import org.chai.chwcf.transaction.Category;
@@ -130,8 +134,8 @@ class Initializer {
 		def admin = new ShiroUser(username: "admin", passwordHash: new Sha256Hash("kamsfany").toHex())
 		def user = new ShiroUser(username: "user", passwordHash: new Sha256Hash("kamsfany").toHex())
 		admin.addToPermissions("*:*")
-		admin.save()
-		user.save()
+		admin.save(failOnError: true, flush:true)
+		user.save(failOnError: true, flush:true)
 	}
 	
 	static def createTransaction(){
@@ -148,15 +152,27 @@ class Initializer {
 			def carrefourHC = OrganisationUnit.findByShortName("RW,N,BU,CARHC");
 			def gihogweHC = OrganisationUnit.findByShortName("RW,N,BU,GIHHC");
 			def jaliHC = OrganisationUnit.findByShortName("RW,N,BU,JALHC");
+			
 				
 			//Registration levels
-			def regLevel1 = new RegistrationLevel(names:j(["en":"National","fr":"Nationale"]), descriptions:j([:]),order: 1)
-			def regLevel3 = new RegistrationLevel(names:j(["en":"Sector","fr":"Secteur"]), descriptions:j([:]),order: 3)
-			def regLevel2 = new RegistrationLevel(names:j(["en":"District","fr":"District"]), descriptions:j([:]),order: 2)
+			def nationalLevel = new RegistrationLevel(names:j(["en":"National","fr":"Nationale"]), descriptions:j([:]),order: 1)
+			def sectorLevel = new RegistrationLevel(names:j(["en":"Sector","fr":"Secteur"]), descriptions:j([:]),order: 3)
+			def districtLevel = new RegistrationLevel(names:j(["en":"District","fr":"District"]), descriptions:j([:]),order: 2)
 			
-			regLevel1.save(failOnError: true, flush:true)
-			regLevel3.save(failOnError: true, flush:true)
-			regLevel2.save(failOnError: true, flush:true)
+			nationalLevel.save(failOnError: true, flush:true)
+			sectorLevel.save(failOnError: true, flush:true)
+			districtLevel.save(failOnError: true, flush:true)
+			
+			
+			def binome= new MemberCategory(names:j(["en":"Binome","fr":"Binome fr"]), descriptions:j([:]),order: 2)
+			def asm= new MemberCategory(names:j(["en":"ASM","fr":"ASM fr"]), descriptions:j([:]),order: 1)
+			
+			binome.save(failOnError: true, flush:true)
+			asm.save(failOnError: true, flush:true)
+			
+			
+			
+
 			
 			//Type of Activity
 			def liveStock = new Activity(names:j(["en":"Live Stock","fr":"BŽtail"]), descriptions:j([:]),order: 1)
@@ -193,7 +209,7 @@ class Initializer {
 			kivuyeCoop.addActivity(agriculture);
 			kivuyeCoop.addActivity(eggPoultryfarm);
 			//add level
-			regLevel1.addCooperative(kivuyeCoop);
+			nationalLevel.addCooperative(kivuyeCoop);
 			//add score
 			kivuyeCoop.addScore(kivuyeScore1)
 			kivuyeCoop.addScore(kivuyeScore2)
@@ -222,7 +238,7 @@ class Initializer {
 			 gitareCoop.addActivity(sellOfFertilizer);
 			 gitareCoop.addActivity(carpentry);
 			 //add level
-			 regLevel3.addCooperative(gitareCoop);
+			 sectorLevel.addCooperative(gitareCoop);
 			 //add score
 			 gitareCoop.addScore(gitareScore1)
 			 gitareCoop.addScore(gitareScore2)
@@ -241,6 +257,21 @@ class Initializer {
 //			def carrefourCoop = OrganisationUnit.findByShortName("RW,N,BU,CARHC");
 //			def gihogweCoop= OrganisationUnit.findByShortName("RW,N,BU,GIHHC");
 //			def jaliCoop = OrganisationUnit.findByShortName("RW,N,BU,JALHC");
+			 
+			 
+			 //Costing Type
+			 def sales = new CostingType(names:j(["en":"Sales","fr":"Ventes"]), descriptions:j(["en":"Sales","fr":"Ventes"]),order: 1);
+			 def totalCost = new CostingType(names:j(["en":"Total Cost","fr":"Cout Total"]), descriptions:j(["en":"Total Cost","fr":"Cout Total"]),order: 3);
+			 def dividend = new CostingType(names:j(["en":"Dividend","fr":"Dividend"]), descriptions:j(["en":"Dividend","fr":"Dividend"]),order: 2);
+			 def totalAsset = new CostingType(names:j(["en":"Total Asset","fr":"Total Asset"]), descriptions:j(["en":"Total Asset","fr":"Total Asset"]),order: 5);
+			 def invenstment = new CostingType(names:j(["en":"Invenstment","fr":"Invenstment"]), descriptions:j(["en":"Invenstment","fr":"Invenstment"]),order: 4);
+			 
+			 sales.save(failOnError: true, flush:true)
+			 totalCost.save(failOnError: true, flush:true)
+			 dividend.save(failOnError: true, flush:true)
+			 totalAsset.save(failOnError: true, flush:true)
+			 invenstment.save(failOnError: true, flush:true)
+			 
 			
 			
 			//Transaction Category Type
@@ -279,21 +310,32 @@ class Initializer {
 			bankTransaction.addCategory(bankWithdraw)
 			bankTransaction.save(failOnError: true, flush:true)
 			
-			
-			//Get User
-			def user = ShiroUser.findByUsername("admin");
+		 	
+			def admin = ShiroUser.findByUsername("admin");
+			def user = ShiroUser.findByUsername("user");
 			
 			//Transactions
 			def transaction1 = new Transaction(
 				cooperative: kivuyeCoop,
 				category: accountPayable,
-				enteredBy: user.id,
+				enteredBy: admin.id,
 				transactionDate: getDate(2011,3,9),
 				recordedDate: getDate(2011,4,17),
 				description:"Transaction 1",
 				amount:23000
 				);
 			transaction1.save(failOnError: true, flush:true)
+			
+			def transaction2 = new Transaction(
+				cooperative: kivuyeCoop,
+				category: accountPayable,
+				enteredBy: user.id,
+				transactionDate: getDate(2011,3,10),
+				recordedDate: getDate(2011,4,27),
+				description:"Transaction 2",
+				amount:2000
+				);
+			transaction2.save(failOnError: true, flush:true)
 			
 			
 

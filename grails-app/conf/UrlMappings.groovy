@@ -2,8 +2,9 @@ class UrlMappings {
 
 	static mappings = {
 		
-		"/admin/$user/$action"(controller:"admin")
-		"/chwcf/$user/$cooperative/$action"(controller:"chwcf")
+		"/admin/$action/$region?/$district?"(controller:"admin")
+		
+		"/chwcf/$cooperative/$action"(controller:"chwcf")
 		
 		"/auth/$action"(controller:"auth")
 		
@@ -14,7 +15,8 @@ class UrlMappings {
 		}
 		
 		// homepage in home controller
-		"/"(controller:"home", action:"index")
+		//"/"(controller:"home", action:"index")
+		"/"(controller:"admin", action:"regions")
 		"500"(view:'/error')
 	}
 	

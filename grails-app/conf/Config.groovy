@@ -146,7 +146,7 @@ security.shiro.authc.required = false
 site.languages=["en","fr","rw"]
 site.fallback.language="en"
 site.admin=true
-site.entity.list.max=40
+site.entity.list.max=32
 site.period=1
 
 facility.level=4

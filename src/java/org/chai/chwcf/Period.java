@@ -43,7 +43,7 @@ import javax.persistence.TemporalType;
  *
  */
 @SuppressWarnings("serial")
-@Entity(name = "ChwcfPeriod")
+@Entity(name = "Period")
 @Table(name = "chwcf_period")
 public class Period extends Translatable{
 	

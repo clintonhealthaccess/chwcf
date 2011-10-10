@@ -25,64 +25,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.organisation
+package org.chai.chwcf;
 
-import org.chai.chwcf.AbstractEntityController;
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import java.util.Comparator;
+
+import org.chai.chwcf.organisation.Organisation;
 
 /**
  * @author Jean Kahigiso M.
  *
  */
-@SuppressWarnings("deprecation")
-class ActivityController extends AbstractEntityController {
-	
-	def getEntity(def id){
-		return Activity.get(id);
-	}
-	def createEntity(){
-		return new Activity();
-	}
-	def getModel(def entity) {
-		
-		[
-			]
-	}
+public class OrganisationSorter implements Comparator<Organisation> {
 
-	def getTemplate() {
-		return "/admin/organisation/createActivity"
-	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
-	def bindParams(def entity) {
-		entity.properties = params
-		
-		// FIXME GRAILS-6967 makes this necessary
-		// http://jira.grails.org/browse/GRAILS-6967
-		if (params.names!=null) entity.names = params.names
-		if (params.descriptions!=null) entity.descriptions = params.descriptions
-	}
-	
-	def list = {
-		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
-		params.offset = params.offset ? params.int('offset'): 0
-		
-		List<Activity> activities = Activity.list(params);
-		
-		render (view: '/organisation/admin/list', model:[
-			template:"listActivities",
-			entities: activities,
-			entityCount: Activity.count(),
-			code:"admin.activity.label"
-			])
+	@Override
+	public int compare(Organisation org1, Organisation org2) {
+		return org1.getName().compareTo(org2.getName());
 	}
 
 }

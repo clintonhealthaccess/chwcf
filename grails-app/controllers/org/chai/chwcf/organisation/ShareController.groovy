@@ -28,42 +28,29 @@
 package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
-import org.chai.chwcf.CooperativeSorter
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import org.chai.chwcf.organisation.Organisation;
-import org.chai.chwcf.organisation.OrganisationService;
-import org.chai.chwcf.organisation.CooperativeService;
-import org.hisp.dhis.organisationunit.OrganisationUnit
 
 /**
  * @author Jean Kahigiso M.
  *
  */
 @SuppressWarnings("deprecation")
-class CooperativeController extends AbstractEntityController {
-	def log = GroovyLog.newInstance("LogExample");
-	OrganisationService organisationService;
-	CooperativeService cooperativeService;
-
+class ShareController  extends AbstractEntityController {
+	
 	def getEntity(def id){
-		return Cooperative.get(id);
+		return Share.get(id);
 	}
 	def createEntity(){
-		def entity = new Cooperative();
-		if(!params['facilityId']) entity.organisationUnit = OrganisationUnit.get(params.int('facilityId'));
-		return entity;
+		return new Share();
 	}
 	def getModel(def entity) {
 		
-		[ 
-			cooperative: entity,
-			activities: Activity.list(),
-			levels: RegistrationLevel.list()
+		[
 			]
 	}
 
 	def getTemplate() {
-		return "/admin/organisation/createCooperative"
+		return "/admin/organisation/createShare"
 	}
 	def validateEntity(def entity) {
 		return entity.validate()
@@ -77,32 +64,30 @@ class CooperativeController extends AbstractEntityController {
 	}
 	def bindParams(def entity) {
 		entity.properties = params
+		
+		// FIXME GRAILS-6967 makes this necessary
+		// http://jira.grails.org/browse/GRAILS-6967
+		if (params.names!=null) entity.names = params.names
+		if (params.descriptions!=null) entity.descriptions = params.descriptions
 	}
-
+	
 	def list = {
-
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
-
-		OrganisationUnit district = OrganisationUnit.get(params.int('districtId'));
-		log.sayHello("District====>"+district)
-
-		List<Cooperative> cooperatives = cooperativeService.getCooperative(district)
-		Collections.sort(cooperatives, new CooperativeSorter());
-
-		def max = Math.min(params['offset']+params['max'],cooperatives.size())
-
-		render (view: '/admin/list', model:[
-					template: "organisation/listCooperatives",
-					entities: cooperatives.subList(params['offset'], max),
-					entityCount: cooperatives.size(),
-					entityName: "Cooperative",
-					code: "admin.cooperative.label"
-				])
+		
+		Cooperative cooperative = Cooperative.get(params.coopId)
+		List<Share> shares = cooperative.shares;
+		
+		def max = Math.min(params['offset']+params['max'],shares.size())
+		
+		render (view: '/admin/organisation/list', model:[
+			template: "listShares",
+			entities: shares.subList(params['offset'], max),
+			entityCount: shares.size(),
+			code: "admin.share.label"
+			])
 	}
+
+
 }
-
-
-
-
 

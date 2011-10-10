@@ -25,64 +25,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.organisation
+package org.chai.chwcf
 
-import org.chai.chwcf.AbstractEntityController;
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.Translation;
+import org.apache.commons.lang.LocaleUtils;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 /**
  * @author Jean Kahigiso M.
  *
  */
 @SuppressWarnings("deprecation")
-class ActivityController extends AbstractEntityController {
+class LocaleService {
 	
-	def getEntity(def id){
-		return Activity.get(id);
-	}
-	def createEntity(){
-		return new Activity();
-	}
-	def getModel(def entity) {
-		
-		[
-			]
-	}
+static transactional = false
 
-	def getTemplate() {
-		return "/admin/organisation/createActivity"
-	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
-	def bindParams(def entity) {
-		entity.properties = params
-		
-		// FIXME GRAILS-6967 makes this necessary
-		// http://jira.grails.org/browse/GRAILS-6967
-		if (params.names!=null) entity.names = params.names
-		if (params.descriptions!=null) entity.descriptions = params.descriptions
+	def getAvailableLanguages() {
+		List<String> languages = ConfigurationHolder.config.site.languages;
+		return languages;
 	}
 	
-	def list = {
-		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
-		params.offset = params.offset ? params.int('offset'): 0
-		
-		List<Activity> activities = Activity.list(params);
-		
-		render (view: '/organisation/admin/list', model:[
-			template:"listActivities",
-			entities: activities,
-			entityCount: Activity.count(),
-			code:"admin.activity.label"
-			])
+	def getCurrentLanguage() {
+		Locale locale = RequestContextUtils.getLocale(RequestContextHolder.currentRequestAttributes().getRequest());
+		return locale.getLanguage();
+	}
+	
+	def getFallbackLanguage() {
+		return ConfigurationHolder.config.site.fallback.language;
+	}
+	
+	String getText(Translation translation) {
+		def text = translation?.get(getCurrentLanguage())
+		if (text == null || text.trim().equals("")) text = translation?.get(getFallbackLanguage())
+		return text;
 	}
 
 }
