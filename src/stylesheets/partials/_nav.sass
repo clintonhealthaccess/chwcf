@@ -1,0 +1,283 @@
+
+// Languages switch
+#switcher
+  right: 0
+  position: absolute
+  top: 0
+  +pie-clearfix
+  
+  li
+    display: inline
+    float: left
+    margin-left: 3px
+    
+  a
+    background: $filler
+    color: $primary
+    display: inline-block
+    font-size: 9px
+    padding: 7px 6px 5px
+    text-decoration: none
+    text-transform: uppercase
+    +border-bottom-radius(3px)
+    &:hover, &:focus, &.no-link
+      background: $primary
+      color: #fff
+    
+
+// Main navigation
+#navigation
+  background: url('../images/bg/nav_bg.png') repeat-x
+  height: 42px
+  position: relative
+  z-index: 50
+
+#main-menu
+  float: left
+  +pie-clearfix
+  > li
+    display: inline
+    float: left
+    position: relative
+    &:first-child
+      border-left: 1px solid $primary_light
+    &:last-child
+      border-right: 1px solid $primary_dark
+    &:hover .submenu
+      display: block
+      
+  a
+    border-left: 1px solid $primary_dark
+    border-right: 1px solid $primary_light
+    color: #fff
+    display: inline-block
+    font-size: 13px
+    font-weight: bold
+    padding: 14px 25px
+    text-decoration: none
+    +text-shadow(rgba(0, 0, 0, 0.3), 0, 1px, 0)
+    &:hover, &:focus, &.active
+      background: $primary_dark
+      +box-shadow($primary - #222, 0, -3px, 8px, 6px, inset)
+    &:active
+      +box-shadow($primary - #292929, 0, -2px, 10px, 10px, inset)
+    
+  .submenu
+    background: $primary
+    border: 1px solid $primary_dark
+    display: none
+    opacity: 0.93
+    padding: 5px 0 10px
+    position: absolute
+    top: 41px
+    z-index: 30
+    +border-bottom-radius
+    +box-shadow(#ccc 2px 2px 3px, $primary_dark 0 0 8px 3px inset)
+    a
+      border-bottom: 1px solid $primary_dark
+      display: block
+      font-size: 12px
+      font-weight: normal
+      padding: 7px 25px 7px
+      white-space: nowrap
+      &:hover, &:focus
+        background: $primary_dark
+        
+        
+// Logout navigation
+#logout
+  position: absolute
+  right: 0
+  top: 100px
+  z-index: 60
+  
+  li
+    display: inline
+    float: left
+    margin-left: 7px
+    
+  a
+    background: $primary_dark
+    color: $filler
+    display: block
+    font-size: 11px
+    padding: 6px 12px
+    text-decoration: none
+    +border-radius(3px)
+    +box-shadow($primary - #333 0 -2px 9px 1px inset)
+    +text-shadow($primary - #333, 0, 1px, 0)
+    &:hover, &:focus
+      color: #fff
+      +box-shadow($primary - #333 0 -2px 9px 4px inset)
+    &:active
+      +box-shadow($primary - #333 0 2px 9px 4px inset)
+    &.redmine
+      color: #fff
+      opacity: 0.7
+      &:hover, &:focus
+        opacity: 1
+
+
+// Sub navigation
+.subnav, .entity-form-header
+  background: url('../images/bg/subnav_bg.png') repeat-x
+  color: #888
+  font-size: 11px
+  height: 11px
+  padding: 14px
+  a
+    font-size: 11px
+    font-weight: bold
+  &.center
+    font-size: 14px
+    text-align: center
+    
+.filter
+  display: inline
+  float: left
+  margin-right: 15px
+    
+.subnav-dropdown
+  position: relative
+  > a
+    background: url("../images/expand.png") no-repeat 95% 57%
+    padding: 5px 18px 5px 8px
+    
+    
+    &:hover, &:focus
+      background: url("../images/expand.png") no-repeat 95% 58% $primary !important
+      color: #fff
+      position: relative
+      text-decoration: none
+      z-index: 20
+      +box-shadow($primary - #222 0 2px 9px 0 inset)
+      +border-radius(3px)
+  
+.dropdown-list
+  background: $dropdown
+  border: 1px solid $dropdown - #222
+  display: none
+  left: 0
+  min-width: 200px
+  opacity: 0.95
+  padding: 5px 0 0 0
+  position: absolute
+  top: 13px
+  z-index: 1
+  +border-bottom-radius(3px)
+  +border-top-right-radius(3px)
+  +box-shadow(#ccc 2px 2px 3px, $dropdown - #111 0 0 8px 3px inset)
+  
+  li
+    border-bottom: 1px dotted $dropdown - #191919
+    display: block
+    padding: 7px 10px 5px
+    white-space: nowrap
+    &:hover, &:focus
+      a
+        color: $primary_dark
+      .survey-section a
+        color: $primary
+    &:last-child
+      border: none
+        
+    a
+      color: $primary
+      font-size: 10px
+      font-weight: bold
+      text-decoration: none
+      +text-shadow(#fff, 0, 1px, 0)
+      &:hover
+        color: $primary - #333
+        +text-shadow(#fff, 0, 1px, 0)
+        
+      &.foldable-toggle
+        border: none
+        cursor: pointer
+        display: block
+        float: left
+        margin-right: 5px
+        width: 15px
+        height: 15px
+        text-indent: -9999px
+        background: url('../images/icons/toggle_plus.png') no-repeat left center
+        &.toggled
+          background: url('../images/icons/toggle_minus.png') no-repeat left center
+          
+      &.dropdown-link
+        background: none
+        &:hover
+          color: $primary - #444
+          +text-shadow(#fff, 0, 1px, 0)
+          
+      &.opened
+        background: $dropdown
+        color: $primary - #444
+        +text-shadow(#fff, 0, 1px, 0)
+      
+  .survey-section
+    border-top: 1px dotted $dropdown - #191919
+    margin-top: 5px
+    margin-left: 5px
+    +pie-clearfix
+    
+    a
+      color: $primary
+      padding-right: 10px
+      +text-shadow(#fff, 0, 1px, 0)
+      &:hover, &:focus
+        background: $dropdown
+        color: $primary - #444
+        +text-shadow(#fff, 0, 1px, 0)
+      
+    li
+      &:focus, &:hover
+        a
+          color: $primary - #666
+          
+.organisation-fold
+  border-top: 1px solid $dropdown - #191919
+  margin-top: 5px
+  padding-top: 5px
+  
+.foldable
+  min-width: 75px
+  a.foldable-toggle
+    display: block
+    cursor: pointer
+    width: 20px
+    height: 20px
+    margin: -3px
+    float: left
+    text-indent: -9999px
+    background-image: url('../images/icons/toggle_plus.png')
+    &.toggled
+      background-image: url('../images/icons/toggle_minus.png')
+  
+  &.opened > span, &.opened > a
+    font-weight: bold
+    
+.organisation-fold
+  padding: 0 5px
+  
+.paginateButtons
+  .step
+    background: $filler
+    border: 1px solid $filler - #111
+    color: $primary
+    display: inline-block
+    margin-right: 4px
+    padding: 3px 5px
+    text-decoration: none
+    +border-radius(2px)
+    &:hover, &:focus
+      border: 1px solid $filler - #222
+      color: $primary - #333
+  .currentStep
+    background: $primary
+    border: 1px solid $primary
+    color: #fff
+    display: inline-block
+    margin-right: 4px
+    padding: 3px 5px
+    +border-radius(2px)
