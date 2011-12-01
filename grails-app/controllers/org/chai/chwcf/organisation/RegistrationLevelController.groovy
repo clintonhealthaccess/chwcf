@@ -29,13 +29,14 @@ package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.apache.commons.collections.*;
 
 /**
  * @author Jean Kahigiso M.
  *
  */
 @SuppressWarnings("deprecation")
-class RegistrationLevelCo extends AbstractEntityController {
+class RegistrationLevelController extends AbstractEntityController {
 
 	def getEntity(def id){
 		return RegistrationLevel.get(id);
@@ -45,25 +46,20 @@ class RegistrationLevelCo extends AbstractEntityController {
 	}
 	def getModel(def entity) {
 
-		[]
+		[
+			level: entity
+			]
 	}
 
 	def getTemplate() {
-		return "/admin/organisation/createReglevels"
+		return "/admin/organisation/createLevel"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.organisation.registration.level.label"
 	}
 	def bindParams(def entity) {
 		entity.properties = params
-		
+	
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
@@ -71,16 +67,21 @@ class RegistrationLevelCo extends AbstractEntityController {
 	}
 
 	def list = {
+		
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
 
 		List<RegistrationLevel> levels = RegistrationLevel.list(params);
-
-		render (view: '/admin/organisation/list', model:[
-					template: "listReglevels",
+		if(!levels.isEmpty())
+			Collections.sort(levels)
+		
+		render (view: '/admin/list', model:[
+					template: "/organisation/levelList",
 					entities: levels,
+					showLocation: false,
 					entityCount: RegistrationLevel.count(),
-					code: "admin.registration.level.label"
+					targetURI: getTargetURI(),
+					code: getLabel()
 				])
 	}
 }

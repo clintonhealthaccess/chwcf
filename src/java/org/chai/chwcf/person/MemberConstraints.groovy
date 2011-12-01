@@ -32,10 +32,14 @@ package org.chai.chwcf.person
  *
  */
 constraints = {
-	idNumber(nullable: false, blank: false)
-	cooperative(nullable:false, blank:false)
+	cooperative(nullable: false, blank: false)
+	idNumber(nullable: false, blank: false, unique: true)
+	familyName(nullable: false, blank: false)
 	category(nullable:false, blank: false)
-	joinDate(nullable: false,blank: false)
-	leftDate(nullable: true, blank: true, validator: { val, obj -> return val.after(obj.startDate)})
-
+	email(nullable: true, blank: true,email:true)
+	gender(nullable:false, blank: false)
+	dob(nullable: false, max: new Date())
+	joinDate(nullable: false, max: new Date(), validator: { val, obj -> return val?.after(obj.dob)})
+	leftDate(nullable: true, max: new Date(), validator: { left, obj -> return left?.after(obj.joinDate)})
+	active(nullable: true, validator: { val, obj -> return (val==true)?(obj.leftDate==null):true})
 }

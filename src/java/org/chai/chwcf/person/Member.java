@@ -51,8 +51,8 @@ import org.chai.chwcf.organisation.Cooperative;
 @Table(name = "chwcf_member")
 public class Member extends Person {
 	
-	public enum Gender {
-		MALE, FEMALE, UNKNOWN
+	public static enum Gender {
+		UNKNOWN, MALE, FEMALE 
 	};
 
 	private Long id;
@@ -112,7 +112,8 @@ public class Member extends Person {
 	public void setLeftDate(Date leftDate) {
 		this.leftDate = leftDate;
 	}
-
+    @ManyToOne(targetEntity=MemberCategory.class, optional = false)
+    @JoinColumn(nullable = false)
 	public MemberCategory getCategory() {
 		return category;
 	}

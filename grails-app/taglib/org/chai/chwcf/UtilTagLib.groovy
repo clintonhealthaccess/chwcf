@@ -26,67 +26,95 @@ package org.chai.chwcf
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+import org.chai.chwcf.utils.LanguageUtils
 /**
  * @author Jean Kahigiso M.
  *
  */
+
 class UtilTagLib {
-	
-	def localeService;
-	
+
+	def createLinkWithTargetURI = {attrs, body ->
+		if (attrs['params'] == null) attrs['params'] = [:]
+		else attrs['params'] = new HashMap(attrs['params'])
+		attrs['params'] << [targetURI: createLink(controller: controllerName, action: actionName, params: params) - request.contextPath];
+		out << createLink(attrs, body)
+	}
+
 	def toHtml = {attrs, body ->
 		out << attrs.value.replaceAll("(\\r\\n|\\n)", "<br/>").replaceAll("( )", "&nbsp;")
 	}
-	
+
 	def dateFormat = { attrs, body ->
 		out << new java.text.SimpleDateFormat(attrs.format).format(attrs.date)
 	}
-	
-	def i18nInput = { attrs, body ->
-		if (attrs["type"] == null) attrs["type"] = 'text'
-		attrs["locales"] = localeService.getAvailableLanguages();
-		out << render(template:"/tags/i18nInput", model: attrs)
-	}
-	
-	def i18nTextarea = { attrs, body ->
-		if (attrs["type"] == null) attrs["type"] = 'text'
-		if (attrs["rows"] == null) attrs["rows"] = '4'
-		if (attrs["width"] == null) attrs["width"] = '300'
-		attrs["locales"] = localeService.getAvailableLanguages();
-		out << render(template:"/tags/i18nTextarea", model: attrs)
-	}
-	def i18nRichTextarea = { attrs, body ->
-		if (attrs["type"] == null) attrs["type"] = 'text'
-		if (attrs["rows"] == null) attrs["rows"] = '4'
-		if (attrs["width"] == null) attrs["width"] = '300'
-		attrs["locales"] = localeService.getAvailableLanguages();
-		out << render(template:"/tags/i18nRichTextarea", model: attrs)
-	}
-	
+
 	def input = { attrs, body ->
 		if (attrs["type"] == null) attrs["type"] = 'text'
 		out << render(template:"/tags/input", model: attrs)
 	}
 	
-	def selectFromEnum = { attrs, body ->
-		out << render(template:"/tags/selectFromEnum", model: attrs)
+	def inputDate = { attrs, body ->
+		if (attrs["type"] == null) attrs["type"] = 'text'
+		if (attrs["id"] == null) attrs["id"] = 'date-field-one'
+		out << render(template:"/tags/inputDate", model: attrs)
 	}
-	
+
+	def i18nInput = { attrs, body ->
+		if (attrs["type"] == null) attrs["type"] = 'text'
+		attrs["locales"] = LanguageUtils.getAvailableLanguages();
+		out << render(template:"/tags/i18nInput", model: attrs)
+	}
+
 	def textarea = { attrs, body ->
 		if (attrs["type"] == null) attrs["type"] = 'text'
 		if (attrs["rows"] == null) attrs["rows"] = '1'
 		out << render(template:"/tags/textarea", model: attrs)
 	}
-	
-	def locales = { attrs, body ->
-		attrs["locales"] = localeService.getAvailableLanguages();
-		out << render(template:"/tags/locales", model: attrs)
+
+	def i18nTextarea = { attrs, body ->
+		if (attrs["type"] == null) attrs["type"] = 'text'
+		if (attrs["rows"] == null) attrs["rows"] = '6'
+		if (attrs["width"] == null) attrs["width"] = '300'
+		if (attrs["readonly"] == null) attrs["readonly"] = false
+		attrs["locales"] = LanguageUtils.getAvailableLanguages();
+		out << render(template:"/tags/i18nTextarea", model: attrs)
 	}
 	
+
+	def searchBox = { attrs, body ->
+		if (attrs['controller'] == null) attrs['controller'] = controllerName;
+		if (attrs['action'] == null) attrs['action'] = actionName;
+		attrs['hiddenParams'] = new HashMap(attrs['params']?attrs['params']:params)
+		attrs['hiddenParams'].remove('max')
+		attrs['hiddenParams'].remove('offset')
+		attrs['hiddenParams'].remove('controller')
+		attrs['hiddenParams'].remove('action')
+		attrs['hiddenParams'].remove('q')
+		out << render(template:"/tags/searchBox", model: attrs);
+	}
+
+	def selectFromEnum = { attrs, body ->
+		out << render(template:"/tags/selectFromEnum", model: attrs)
+	}
+
+	def locales = { attrs, body ->
+		attrs["locales"] = LanguageUtils.getAvailableLanguages();
+		out << render(template:"/tags/locales", model: attrs)
+	}
+
 	def i18n = { attrs, body ->
-		def text = localeService.getText(attrs['field'])
+		def text = LanguageUtils.getText(attrs['field'])
 		out << text
 	}
 
+	def ifText = { attrs, body ->
+		def text = LanguageUtils.getText(attrs['field'])
+		if (text != null && !Utils.stripHtml(text, null).trim().isEmpty()) out << body()
+	}
+
+	def stripHtml = { attrs, body ->
+		def text = LanguageUtils.getText(attrs['field'])
+		if (text != null) out << Utils.stripHtml(text, attrs.int('chars'))
+	}
 }

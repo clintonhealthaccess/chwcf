@@ -27,8 +27,19 @@
  */
 package org.chai.chwcf.transaction
 
+import java.util.Date;
+import java.util.List;
+
 import org.chai.chwcf.organisation.Cooperative
-import org.chai.chwcf.security.ShiroUser
+import org.chai.chwcf.organisation.CooperativeService
+import org.chai.chwcf.organisation.Organisation
+import org.chai.chwcf.reports.CostingType;
+import org.chai.chwcf.security.User;
+import org.chai.chwcf.transaction.Transaction;
+import org.chai.chwcf.utils.Utils;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Projections;
 
 /**
  * @author Jean Kahigiso M.
@@ -39,6 +50,7 @@ class TransactionService {
 	static transactional = true;
 	def localeService;
 	def sessionFactory;
+	def cooperativeService;
 
 	List<Transaction> getTransaction(Cooperative cooperative){
 		List<Transaction> transactions = null;
@@ -48,7 +60,15 @@ class TransactionService {
 		return transactions;
 	}
 
-	List<Transaction> getTransaction(ShiroUser user){
+	List<Transaction> getTransaction(Organisation organisation){
+		List<Transaction> transactions = null;
+		List<Cooperative> cooperatives = cooperativeService.getCooperative(organisation);
+		for(Cooperative cooperative: cooperatives)
+			transactions.addAll(this.getTransaction(cooperative));
+		return transactions;
+	}
+
+	List<Transaction> getTransaction(User user){
 		List<Transaction> transactions = null;
 		String userId = Integer.toString(user.id)
 		if(user)
@@ -58,5 +78,28 @@ class TransactionService {
 
 	List<Transaction> getTransaction(){
 		return Transaction.list();
+	}
+	
+	private Criteria getTransactionListCriteria(Date startDate, Date endDate, Cooperative cooperative, CostingType costingType) {
+		def criteria = sessionFactory.getCurrentSession().createCriteria(Transaction.class)
+		criteria.add(Restrictions.and(
+			Restrictions.ge('transactionDate', startDate),
+			Restrictions.le('transactionDate', endDate)
+		))
+		criteria.add(Restrictions.eq('cooperative', cooperative))
+		criteria.createAlias('category', 'c')
+		criteria.createAlias('c.costingTypes', 'ct')
+		criteria.add(Restrictions.eq('ct.id', costingType.id))
+		return criteria;
+	}
+	
+	List<Transaction> getTransactions(Date date, Cooperative cooperative, CostingType costingType) {
+		return getTransactionListCriteria(Utils.getStartDate(date), Utils.getEndDate(date), cooperative, costingType).list();
+	}
+	
+	Double getTransactionSum(Date date, Cooperative cooperative, CostingType costingType) {
+		Double sum = getTransactionListCriteria(Utils.getStartDate(date), Utils.getEndDate(date), cooperative, costingType).setProjection(Projections.sum("amount")).uniqueResult()
+		if (sum == null) sum = 0d;
+		return sum;
 	}
 }

@@ -27,13 +27,14 @@
  */
 package org.chai.chwcf.organisation
 
+import org.apache.shiro.SecurityUtils;
 import org.chai.chwcf.AbstractEntityController;
 import org.chai.chwcf.CooperativeSorter
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.chai.chwcf.organisation.Organisation;
-import org.chai.chwcf.organisation.OrganisationService;
 import org.chai.chwcf.organisation.CooperativeService;
 import org.hisp.dhis.organisationunit.OrganisationUnit
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.chai.chwcf.utils.Utils;
 
 /**
  * @author Jean Kahigiso M.
@@ -41,65 +42,132 @@ import org.hisp.dhis.organisationunit.OrganisationUnit
  */
 @SuppressWarnings("deprecation")
 class CooperativeController extends AbstractEntityController {
-	def log = GroovyLog.newInstance("LogExample");
-	OrganisationService organisationService;
+
 	CooperativeService cooperativeService;
+	
+	int facilityLevel = ConfigurationHolder.config.facility.level;
+	int districtLevel = ConfigurationHolder.config.district.level;
+	def facilityGroups =ConfigurationHolder.config.facility.group.type;
 
 	def getEntity(def id){
 		return Cooperative.get(id);
 	}
 	def createEntity(){
-		def entity = new Cooperative();
-		if(!params['facilityId']) entity.organisationUnit = OrganisationUnit.get(params.int('facilityId'));
-		return entity;
+		return new Cooperative()
 	}
 	def getModel(def entity) {
 		
-		[ 
-			cooperative: entity,
-			activities: Activity.list(),
-			levels: RegistrationLevel.list()
+		def district;
+		if(entity.organisationUnit!=null){
+			def organisation = organisationService.createOrganisation(entity.organisationUnit);
+			district = organisationService.getParentOfLevel(organisation, districtLevel);
+		}else{
+			if(params.int('district')){
+				district = organisationService.createOrganisation(OrganisationUnit.get(params.int('district')))
+			}
+			if(params.int('organisation')){
+				district = organisationService.createOrganisation(OrganisationUnit.get(params.int('organisation')))	
+				organisationService.loadChildren(district);
+			}
+			
+		}
+		def organisationGroups = organisationService.getOrganisationUnitGroups(facilityGroups);
+		     
+			[
+				facilities: organisationService.getChildrenOfLevelAndGroups(district, facilityLevel,organisationGroups),
+				district: district,
+				cooperative: entity,
+				activities: Activity.list(),
+				levels: RegistrationLevel.list()
 			]
 	}
 
 	def getTemplate() {
 		return "/admin/organisation/createCooperative"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
+
+	def getLabel() {
+		return "admin.organisation.cooperative.label"
 	}
 
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
 	def bindParams(def entity) {
-		entity.properties = params
+		bindData(entity,params,[exclude:['createDate']])
+				
+		if(params.createDate!='' && params.createDate!=null){
+			entity.createDate=Utils.parseDate(params.createDate);
+		}else
+			entity.createDate=null;
 	}
-
+	
 	def list = {
-
+		Organisation currentOrganisation;
+		List<Cooperative> cooperatives = [];
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
-
-		OrganisationUnit district = OrganisationUnit.get(params.int('districtId'));
-		log.sayHello("District====>"+district)
-
-		List<Cooperative> cooperatives = cooperativeService.getCooperative(district)
-		Collections.sort(cooperatives, new CooperativeSorter());
-
+		def organisationTree = organisationService.getOrganisationTreeUntilLevel(districtLevel)
+		
+		// branch depending on user
+		if (getUser().organisation != null) {
+			def organisationForUser = organisationService.getOrganisation(getUser().organisation);
+			currentOrganisation = getOrganisation(false)
+			
+			if (currentOrganisation == null) currentOrganisation = organisationForUser
+			else if (!organisationService.isAncestor(organisationForUser, currentOrganisation)) {
+				// check if user has access, if not redirect to forbidden page
+				response.sendError(403)
+				return	
+			}
+		}
+		else {
+			log.debug("currentOrganisation1"+currentOrganisation)
+			currentOrganisation = getOrganisation(false)
+			log.debug("currentOrganisation2"+currentOrganisation)
+		}
+		
+		if (currentOrganisation != null) {
+			log.debug("currentOrganisation3"+currentOrganisation)
+			organisationService.getLevel(currentOrganisation)
+			cooperatives=cooperativeService.getCooperative(currentOrganisation);
+		}
+		
+		if(!cooperatives.isEmpty()) Collections.sort(cooperatives, new CooperativeSorter());
+			
 		def max = Math.min(params['offset']+params['max'],cooperatives.size())
-
+			
 		render (view: '/admin/list', model:[
-					template: "organisation/listCooperatives",
-					entities: cooperatives.subList(params['offset'], max),
-					entityCount: cooperatives.size(),
-					entityName: "Cooperative",
-					code: "admin.cooperative.label"
-				])
+				template: "/organisation/cooperativeList",
+				organisation: currentOrganisation,
+				entities: cooperatives.subList(params['offset'], max),
+				showLocation: true,
+				entityCount: cooperatives.size(),
+				districtLevel: districtLevel,
+				organisationTree: organisationTree,
+				targetURI: getTargetURI(),
+				code: getLabel()
+		])
+
 	}
+	def view ={
+		Cooperative cooperative = Cooperative.get(params.int('cooperative'));
+		render (view: '/admin/view', model:[
+			cooperative: cooperative,
+			targetURI: getTargetURI()
+		])
+	}
+	def getAjaxData = {
+		List<Organisation> organisations = cooperativeService.searchOrganisation(params['term']);
+		render(contentType:"text/json") {
+			elements = array {
+				organisations.each { organisation ->
+					elem (
+						id: organisation.organisationUnit.id,
+						organisation: organisation.organisationUnit.name
+					)
+				}
+			}
+		}
+	}
+
 }
 
 

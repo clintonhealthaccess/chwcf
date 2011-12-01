@@ -30,12 +30,17 @@ package org.chai.chwcf.organisation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chai.chwcf.organisation.Organisation;
 import org.chai.chwcf.organisation.OrganisationService;
+import org.chai.chwcf.GroupCollection;
+import org.chai.chwcf.OrganisationSorter;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
@@ -77,6 +82,31 @@ public class OrganisationService {
 		return level;
 	}
 	
+	public boolean isAncestor(Organisation parent, Organisation child) {
+		if (child == null) return false;
+		if (child.equals(parent)) return true;
+		else {
+			loadParent(child);
+			return isAncestor(parent, child.getParent());
+		}
+	}
+	
+	public boolean isAncestor(List<Organisation> parents, Organisation child) {
+		if (child == null) return false;
+		for(Organisation parent : parents){
+			if (child.equals(parent)) return true;
+			else {
+				parents.remove(parent);
+				if(!parents.isEmpty()){
+					loadParent(child);
+					return isAncestor(parents, child.getParent());
+				}
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	public List<Organisation> getOrganisationsOfLevel(int level) {
 		Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel(level);
 		List<Organisation> result = new ArrayList<Organisation>();
@@ -115,6 +145,24 @@ public class OrganisationService {
 		return unitGroupSetCache;
 	}
 	
+	
+	public Organisation getOrganisationTreeUntilLevel(int level, Integer... skipLevels) {
+		List<Integer> skipLevelList = Arrays.asList(skipLevels);
+		Organisation rootOrganisation = getRootOrganisation();
+		loadUntilLevel(rootOrganisation, level-skipLevelList.size(), skipLevels);
+		return rootOrganisation;
+	} 
+	
+	public void loadUntilLevel(Organisation organisation, int level, Integer... skipLevels) {
+		getLevel(organisation);
+		if (organisation.getLevel() < level) {
+			loadChildren(organisation, skipLevels);
+			for (Organisation child : organisation.getChildren()) {
+				loadUntilLevel(child, level, skipLevels);
+			}
+		}
+	}
+	
 	public void loadGroup(Organisation organisation) {
 		organisation.setOrganisationUnitGroup(organisation.getOrganisationUnit().getGroupInGroupSet(getOrganisationUnitGroupSet()));
 	}
@@ -150,7 +198,6 @@ public class OrganisationService {
 				return tmp.getParent();
 			tmp = tmp.getParent();
 			this.loadParent(tmp);
-
 		}
 		return null;
 	}
@@ -163,7 +210,82 @@ public class OrganisationService {
 		}
 		return result;
 	}
+	
+	public List<Organisation> getChildrenOfLevelAndGroups(Organisation organisation, int level, List<OrganisationUnitGroup> groups) {
+		List<OrganisationUnit> children = getChildrenOfLevel(organisation.getOrganisationUnit(), level);
+		List<Organisation> result = new ArrayList<Organisation>();
+		for (OrganisationUnit child : children) {
+			Organisation org = this.createOrganisation(child);
+			this.loadGroup(org);
+			if (groups.contains(org.getOrganisationUnitGroup()))
+				result.add(org);
+		}
+		return result;
+	}
+	
+	public List<Organisation> getOrganisation(int districtLevel,int faciltyLevel, List<String> uuids) {
+		List<OrganisationUnitGroup> groups = this.getOrganisationUnitGroups(uuids);
+		List<Organisation> organisations = this.getOrganisationsOfLevel(districtLevel);
+		List<Organisation> facilities = this.getOrganisationsOfLevel(faciltyLevel);
 		
+		for (Organisation district : organisations)
+			this.loadGroup(district);
+		    
+		for (Organisation facility : facilities) {
+			this.loadGroup(facility);
+			if (groups.contains(facility.getOrganisationUnitGroup()))
+				organisations.add(facility);
+		}
+		
+		return organisations;
+	}
+	
+	
+	public List<Organisation> searchOrganisation(List<Organisation> organisations,String term){
+		List<Organisation> orgs = new ArrayList<Organisation>();
+		for(Organisation organisation: organisations){
+			this.loadGroup(organisation);
+			if(organisation.getOrganisationUnit().getName().toLowerCase().contains(term.toLowerCase()))
+				orgs.add(organisation);
+		}
+		if(!orgs.isEmpty())
+			Collections.sort(orgs,new OrganisationSorter());
+		return orgs;
+		
+	}
+
+
+	public List<OrganisationUnitGroup> getOrganisationUnitGroups(List<String> uuIds){
+		List<OrganisationUnitGroup> organisationUnitGroups = new ArrayList<OrganisationUnitGroup>();
+		for(String uuid: uuIds)
+			organisationUnitGroups.add(this.getOrganisationUnitGroup(uuid));
+		return organisationUnitGroups;
+	}
+	
+	public OrganisationUnitGroup getOrganisationUnitGroup(String uuid) {
+	    	return getGroupCollection().getGroupByUuid(uuid);
+	 }
+	  // optimization, we cache all the groups
+    private GroupCollection groupCollection = null;
+    
+    private GroupCollection getGroupCollection() {
+    	if (groupCollection == null) {
+    		groupCollection = new GroupCollection(getGroupsForExpression());
+    	}
+    	return groupCollection;
+    }
+    
+	@SuppressWarnings("unused")
+	public Set<OrganisationUnitGroup> getGroupsForExpression() {
+		Set<OrganisationUnitGroup> result = new HashSet<OrganisationUnitGroup>();
+		result.addAll(organisationUnitGroupService.getOrganisationUnitGroupSetByName(group).getOrganisationUnitGroups());
+		for (OrganisationUnitGroup organisationUnitGroup : result) {
+			for (OrganisationUnit organisationUnit : organisationUnitGroup.getMembers()) {
+				// EAGER load		
+			}
+		}
+		return result;
+	}
 	
 	private List<OrganisationUnit> getChildrenOfLevel(OrganisationUnit organisation, final int level) {
 		List<OrganisationUnit> result = new ArrayList<OrganisationUnit>(organisationUnitService.getOrganisationUnitsAtLevel(level, organisation));

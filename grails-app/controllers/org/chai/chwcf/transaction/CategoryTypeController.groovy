@@ -29,6 +29,7 @@ package org.chai.chwcf.transaction
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.apache.commons.collections.*;
 
 /**
  * @author Jean Kahigiso M.
@@ -47,21 +48,15 @@ class CategoryTypeController extends AbstractEntityController {
 	def getModel(def entity) {
 		
 		[
+			type: entity
 			]
 	}
 
 	def getTemplate() {
 		return "/admin/transaction/createCategoryType"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.transaction.category.type.label"
 	}
 	def bindParams(def entity) {
 		entity.properties = params
@@ -78,12 +73,17 @@ class CategoryTypeController extends AbstractEntityController {
 		params.offset = params.offset ? params.int('offset'): 0
 				
 		List<CategoryType> types = CategoryType.list(params);
+		
+		if(!types.isEmpty())
+			Collections.sort(types)
 				
-		render (view: '/admin/transaction/list', model:[
-			template: "listCategoryType",
+		render (view: '/admin/list', model:[
+			template: "/transaction/categoryTypeList",
 			entities: types,
+			showLocation: false,
 			entityCount:  CategoryType.count(),
-			code:"admin.category.type.label" 
+			targetURI: getTargetURI(),
+			code: getLabel() 
 			])
 	}
 

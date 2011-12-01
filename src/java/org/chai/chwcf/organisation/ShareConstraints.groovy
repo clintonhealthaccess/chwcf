@@ -1,3 +1,5 @@
+package org.chai.chwcf.organisation
+
 /**
  * Copyright (c) 2011, Clinton Health Access Initiative.
  *
@@ -25,16 +27,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chai.chwcf.organisation
 
 /**
  * @author Jean Kahigiso M.
  *
  */
 constraints = {
-	cooperative(nullable: false, blank: false)
+	
+	cooperative(nullable: false)
 	share(nullable: false, blank: false)
-	startDate(nullable: false, blank: false)
-	endDate(nullable: false, blank: false,validator: { val, obj -> return val.after(obj.startDate)})
+	startDate(nullable: false, max: new Date())
+	endDate(nullable: true, max: new Date(), validator: { val, obj -> return val?.after(obj.startDate)})
+	current(nullable: true, validator: { val, obj -> return (val==true)?(obj.endDate==null):true})
 
 }

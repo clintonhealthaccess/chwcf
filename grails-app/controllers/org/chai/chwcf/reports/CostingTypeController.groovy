@@ -28,11 +28,15 @@
 package org.chai.chwcf.reports
 
 import org.chai.chwcf.AbstractEntityController;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.chai.chwcf.transaction.Category;
+import org.chai.chwcf.reports.CostingType;
 
 /**
  * @author Jean Kahigiso M.
  *
  */
+@SuppressWarnings("deprecation")
 class CostingTypeController extends AbstractEntityController {
 	
 	def getEntity(def id){
@@ -44,25 +48,31 @@ class CostingTypeController extends AbstractEntityController {
 	def getModel(def entity) {
 		
 		[
+			costingType: entity,
+			categories: Category.list()
 			]
 	}
 
+	
 	def getTemplate() {
-		return "/reports/create/costingType"
+		return "/admin/transaction/createCostingType"	
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.reports.costing.type.label"
 	}
 	def bindParams(def entity) {
-		entity.properties = params
 		
+		for(def category : entity.categories) {
+			if (!params.list('categories').contains(category.id)){
+				category.costingTypes.remove(entity)
+			}
+		}
+		entity.properties = params
+		for(def category: params.list('categories')){
+			Category cat = Category.get(category)
+			if (!cat.costingTypes.contains(entity))
+				cat.addCostingType(entity)
+		}
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
@@ -75,11 +85,13 @@ class CostingTypeController extends AbstractEntityController {
 		
 		List<CostingType> costingTypes = CostingType.list(params);
 		
-		render (view: '/reports/admin/view', model:[
-			template: "costingTypes",
+		render (view: '/admin/list', model:[
+			template: "/transaction/costingTypeList",
 			entities: costingTypes,
+			showLocation: false,
 			entityCount: CostingType.count(),
-			code: "admin.costing.types.label"
+			targetURI: getTargetURI(),
+			code: getLabel()
 			])
 		
 		}

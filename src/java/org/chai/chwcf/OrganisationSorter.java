@@ -39,7 +39,7 @@ public class OrganisationSorter implements Comparator<Organisation> {
 
 	@Override
 	public int compare(Organisation org1, Organisation org2) {
-		return org1.getName().compareTo(org2.getName());
+		return org1.getOrganisationUnit().getName().compareTo(org2.getOrganisationUnit().getName());
 	}
 
 }

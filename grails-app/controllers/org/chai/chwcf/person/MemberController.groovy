@@ -27,9 +27,13 @@
  */
 package org.chai.chwcf.person
 
+import org.apache.commons.logging.Log;
 import org.chai.chwcf.AbstractEntityController;
-import org.chai.chwcf.organisation.Cooperative
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.organisation.Cooperative;
+import org.chai.chwcf.person.Member.Gender;
+import org.chai.chwcf.person.MemberCategory;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.chai.chwcf.utils.Utils;
 
 /**
  * @author Jean Kahigiso M.
@@ -42,45 +46,71 @@ class MemberController extends AbstractEntityController {
 		return Member.get(id);
 	}
 	def createEntity(){
-		return new Member();
+		def entity = new Member ();
+		if(!params['cooperative.id']) entity.cooperative = Cooperative.get(params.int('cooperative'));
+		return entity;
 	}
 	def getModel(def entity) {
-		
 		[
-			]
+		member: entity,
+		categories: MemberCategory.list(),
+		genders: Gender.values()
+		]
 	}
 
 	def getTemplate() {
 		return "/admin/person/createMember"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
+	def getLabel() {
+		return "admin.person.member.label"
 	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
-	def bindParams(def entity) {
-		entity.properties = params
+	def bindParams(def entity) {	
+		bindData(entity,params,[exclude:['joinDate','leftDate','dob']])
+		
+		//FIXME If you find better solution to do this please feel free to fix
+		
+		if(params.joinDate!='' && params.joinDate!=null){
+			entity.joinDate=Utils.parseDate(params.joinDate);
+		}else
+			entity.joinDate=null;
+			
+		if(params.leftDate!='' && params.leftDate!=null){
+			entity.leftDate=Utils.parseDate(params.leftDate);
+		}else
+			entity.leftDate=null;
+			
+		if(params.dob!='' && params.dob!=null){
+			entity.dob=Utils.parseDate(params.dob);
+		}else
+			entity.dob=null;
+				
 	}
 	
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
+		List<Member> members = []
+		def hideNewBar = false
 		
-		Cooperative cooperative = Cooperative.get(params.coopId)
-		List<Member> members = cooperative.members;
-		
+		if(params.cooperative){
+			Cooperative cooperative = Cooperative.get(params.cooperative)
+			members = cooperative.members;
+		}
+		if(params.category){
+			MemberCategory category = MemberCategory.get(params.category)
+			members = category.members;
+            hideNewBar= true;
+		}
 		def max = Math.min(params['offset']+params['max'],members.size())
 		
-		render (view: '/admin/person/list', model:[
-			template: "listMembers",
+		render (view: '/admin/list', model:[
+			template: "/person/memberList",
 			entities: members.subList(params['offset'], max),
+			showLocation: false,
 			entityCount: members.size(),
-			code: "admin.member.label"
+			hideNewBar: hideNewBar,
+			targetURI: getTargetURI(),
+			code: getLabel()
 			])
 	}
 

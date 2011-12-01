@@ -8,31 +8,30 @@
 	<session-factory>
 	
 		<mapping class="org.chai.chwcf.Translation" />
-		<mapping class="org.chai.chwcf.ChwcfPeriod" />
 		
 		<mapping class="org.chai.chwcf.organisation.Cooperative" />
 		<mapping class="org.chai.chwcf.organisation.RegistrationLevel" />
 		<mapping class="org.chai.chwcf.organisation.Activity" />
-		<mapping class="org.chai.chwcf.organisation.CooperativePbfScore" />
-		<mapping class="org.chai.chwcf.organisation.CooperativeShare" />
+		<mapping class="org.chai.chwcf.organisation.PbfScore" />
+		<mapping class="org.chai.chwcf.organisation.Share" />
+		<mapping class="org.chai.chwcf.organisation.Training" />
+		<mapping class="org.chai.chwcf.organisation.Supervision" />
 		
 		<mapping class="org.chai.chwcf.person.Person" />
-		<mapping class="org.chai.chwcf.person.CooperativeMember" />
+		<mapping class="org.chai.chwcf.person.Member" />
+		<mapping class="org.chai.chwcf.person.MemberCategory" />
 		
 		<mapping class="org.chai.chwcf.reports.CostingType" />
 		
-		<mapping class="org.chai.chwcf.transaction.TransactionCategoryType" />
-		<mapping class="org.chai.chwcf.transaction.TransactionCategory" />
-		<mapping class="org.chai.chwcf.transaction.Transaction" />
+		<mapping class="org.chai.chwcf.transaction.CategoryType" />
+		<mapping class="org.chai.chwcf.transaction.Category" />
 		<mapping class="org.chai.chwcf.transaction.Transaction" />
 
 		<mapping resource="org/hisp/dhis/organisationunit/hibernate/OrganisationUnit.hbm.xml" />
 		<mapping resource="org/hisp/dhis/organisationunit/hibernate/OrganisationUnitGroup.hbm.xml" />
 		<mapping resource="org/hisp/dhis/organisationunit/hibernate/OrganisationUnitGroupSet.hbm.xml" />
 		<mapping resource="org/hisp/dhis/organisationunit/hibernate/OrganisationUnitLevel.hbm.xml" />
-	    <mapping resource="org/hisp/dhis/period/hibernate/Period.hbm.xml" />
-		<mapping resource="org/hisp/dhis/period/hibernate/PeriodType.hbm.xml" /> 
-
+		
 	</session-factory>
 
 </hibernate-configuration>

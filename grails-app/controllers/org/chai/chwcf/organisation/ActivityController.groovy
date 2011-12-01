@@ -29,6 +29,9 @@ package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.organisation.ActivityService;
+import org.chai.chwcf.organisation.Activity;
+import org.apache.commons.collections.*;
 
 /**
  * @author Jean Kahigiso M.
@@ -36,6 +39,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
  */
 @SuppressWarnings("deprecation")
 class ActivityController extends AbstractEntityController {
+	ActivityService activityService;
 	
 	def getEntity(def id){
 		return Activity.get(id);
@@ -46,21 +50,15 @@ class ActivityController extends AbstractEntityController {
 	def getModel(def entity) {
 		
 		[
+			activity: entity
 			]
 	}
 
 	def getTemplate() {
 		return "/admin/organisation/createActivity"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.organisation.activity.label"
 	}
 	def bindParams(def entity) {
 		entity.properties = params
@@ -74,15 +72,46 @@ class ActivityController extends AbstractEntityController {
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
-		
-		List<Activity> activities = Activity.list(params);
-		
-		render (view: '/organisation/admin/list', model:[
-			template:"listActivities",
+		List<Activity> activities=[];
+		def entityCount
+		def hideNewBar=true;
+			
+		if(!params.int('cooperative')){
+			activities = Activity.list(params);
+			entityCount = Activity.count();
+			hideNewBar = false;
+		}else{
+			Cooperative cooperative = Cooperative.get(params.cooperative);
+			def max = Math.min(params['offset']+params['max'],cooperative.activities.size());
+			activities =cooperative.activities.subList(params['offset'], max)
+			entityCount=activities.size()
+		}
+		if(!activities.isEmpty())
+			Collections.sort(activities)
+			
+		render (view: '/admin/list', model:[
+			template:"/organisation/activityList",
 			entities: activities,
-			entityCount: Activity.count(),
-			code:"admin.activity.label"
+			showLocation: false,
+			entityCount: entityCount,
+			targetURI: getTargetURI(),
+			hideNewBar: hideNewBar,
+			code: getLabel()
 			])
+	}
+	
+	def getAjaxData = {
+		def activities = activityService.searchActivity(params['term']);
+		render(contentType:"text/json") {
+			elements = array {
+				activities.each { activity ->
+					elem (
+						id: activity.id,
+						activity: g.i18n(field: activity.names)
+					)
+				}
+			}
+		}
 	}
 
 }

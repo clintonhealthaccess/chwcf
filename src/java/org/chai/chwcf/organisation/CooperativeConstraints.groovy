@@ -34,4 +34,7 @@ package org.chai.chwcf.organisation
 constraints = {
 	name(nullable: false, blank: false)
 	organisationUnit(nullable: false, blank: false)
+	registrationNumber(nullable: true, blank: true, unique: true)
+	registrationLevel(nullable: false, blank: false)
+	createDate(nullable: false, blank: false, max: new Date())
 }

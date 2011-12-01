@@ -32,13 +32,14 @@ package org.chai.chwcf.transaction
  *
  */
 constraints = {
-	cooperative(nullable: false, blank: false)
-	category(nullable: false, blank: false)
-	enteredBy(nullable: false, blank: false)
-	transactionDate(nullable:false, blank:false)
-	recordedDate(nullable:false, blank:false)
-	amount(nullable: false, blank: false)
-	recordedDate(nullable: false, blank: false, validator: {  val, obj ->
-		return (val.after(obj.transactionDate)) || (val.equals(obj.transactionDate))
-	})
+	
+	cooperative(nullable: false)
+	category(nullable: false)
+	enteredBy(nullable: false)
+	amount(nullable: false, blank: false, min: 1)
+	transactionDate(nullable:false, max: new Date())
+	recordedDate(nullable:false,validator: {  val, obj -> return (val?.after(obj.transactionDate) || val?.equals(obj.transactionDate))})
+	approval(nullable: true)
+	approvalDate(nullable: true)
+	validatedBy(nullable:true)
 }

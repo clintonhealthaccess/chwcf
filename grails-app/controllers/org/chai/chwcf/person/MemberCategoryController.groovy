@@ -30,6 +30,7 @@ package org.chai.chwcf.person
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.chai.chwcf.person.MemberCategory;
+import org.apache.commons.collections.*;
 
 /**
  * @author Jean Kahigiso M.
@@ -37,7 +38,7 @@ import org.chai.chwcf.person.MemberCategory;
  */
 @SuppressWarnings("deprecation")
 class MemberCategoryController extends AbstractEntityController {
-	
+
 	def getEntity(def id){
 		return MemberCategory.get(id);
 	}
@@ -45,46 +46,43 @@ class MemberCategoryController extends AbstractEntityController {
 		return new MemberCategory();
 	}
 	def getModel(def entity) {
-		
+
 		[
-			]
+					category: entity
+				]
 	}
 
 	def getTemplate() {
-		return "/admin/person/createCategory"
+		return "/admin/person/createMemberCategory"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.person.member.category.label"
 	}
 	def bindParams(def entity) {
 		entity.properties = params
-		
+
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
 		if (params.descriptions!=null) entity.descriptions = params.descriptions
 	}
-	
+
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
 
 		List<MemberCategory> categories = MemberCategory.list();
+		if(!categories.isEmpty())
+			Collections.sort(categories)
 
-		render (view: '/admin/person/list', model:[
-			template: "listCategories",
-			entities: categories,
-			entityCount: MemberCategory.count(),
-			code: "admin.member.categoty.label"
-			])
+		render (view: '/admin/list', model:[
+					template: "/person/memberCategoryList",
+					entities: categories,
+					showLocation: false,
+					entityCount: MemberCategory.count(),
+					targetURI: getTargetURI(),
+					code: getLabel()
+				])
 	}
-
 }
 

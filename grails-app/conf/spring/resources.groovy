@@ -1,5 +1,10 @@
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 import org.chai.chwcf.organisation.OrganisationService;
+import org.chai.chwcf.transaction.TransactionService;
+import org.chai.chwcf.organisation.OrganisationService;
+import org.chai.chwcf.organisation.CooperativeService;
+import org.chai.chwcf.reports.ReportsService;
+
 // Place your Spring DSL code here
 
 
@@ -15,6 +20,11 @@ beans = {
 		organisationUnitService = ref("organisationUnitService")
 		organisationUnitGroupService = ref("organisationUnitGroupService")
 		facilityLevel = organisationLevel
+	}
+	reportsService(ReportsService){
+		organisationService=ref("organisationService")
+		cooperativeService=ref("cooperativeService")
+		transactionService=ref("transactionService")
 	}
 	
 }

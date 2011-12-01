@@ -31,17 +31,18 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.chai.chwcf.organisation.Cooperative;
+import org.hibernate.annotations.Index;
 
 /**
  * @author Jean Kahigiso M.
@@ -57,11 +58,13 @@ public class Transaction implements Serializable {
 	private Cooperative cooperative;
 	private Category category;
 	private Integer enteredBy;
+	private Integer validatedBy;
 	private Date transactionDate;
 	private Date recordedDate;
 	private String description;
 	private Integer amount;
 	private boolean approval = false;
+	private Date approvalDate;
 
 	@Id
 	@GeneratedValue
@@ -101,10 +104,20 @@ public class Transaction implements Serializable {
 		return enteredBy;
 	}
 
+	public void setValidatedBy(Integer validatedBy) {
+		this.validatedBy = validatedBy;
+	}
+	@Basic(optional=true)
+	public Integer getValidatedBy() {
+		return validatedBy;
+	}
+
 	public void setTransactionDate(Date transactionDate) {
 		this.transactionDate = transactionDate;
 	}
-
+	
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
 	public Date getTransactionDate() {
 		return transactionDate;
 	}
@@ -126,12 +139,7 @@ public class Transaction implements Serializable {
 	public String getDescription() {
 		return description;
 	}
-
-	@PrePersist
-	protected void onRecordedDate() {
-		recordedDate = new Date();
-	}
-
+    @Column(nullable=false)
 	public Integer getAmount() {
 		return amount;
 	}
@@ -148,7 +156,14 @@ public class Transaction implements Serializable {
 		this.approval = approval;
 	}
 	
-	
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
+	}
+	@Basic(optional = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
 
 	@Override
 	public int hashCode() {

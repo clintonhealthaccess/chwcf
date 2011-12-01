@@ -29,61 +29,74 @@ package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.utils.Utils;
+
 /**
  * @author Jean Kahigiso M.
  *
  */
 @SuppressWarnings("deprecation")
 class PbfScoreController extends AbstractEntityController {
+	CooperativeService cooperativeService;
 	
 	def getEntity(def id){
 		return PbfScore.get(id);
 	}
 	def createEntity(){
-		return new PbfScore();
+		def entity = new PbfScore();
+		if(!params['cooperative.id']) entity.cooperative= Cooperative.get(params.int('cooperative'));
+		return entity;
 	}
 	def getModel(def entity) {
 		
 		[
+			score: entity
 			]
 	}
 
 	def getTemplate() {
-		return "/admin/organisation/createScore"
+		return "/admin/organisation/createPbfScore"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
+	
+	def getLabel() {
+		return "admin.organisation.pbf.score.label"
 	}
 
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
-	}
 	def bindParams(def entity) {
-		entity.properties = params
+		bindData(entity,params,[exclude:['startDate','endDate']])
+				
+		if(params.startDate!='' && params.startDate!=null){
+			entity.startDate=Utils.parseDate(params.startDate);
+		}else
+			entity.startDate=null;
+			
+		if(params.endDate!='' && params.endDate!=null){
+			entity.endDate=Utils.parseDate(params.endDate);
+		}else
+			entity.endDate=null;
 		
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
-		if (params.descriptions!=null) entity.descriptions = params.descriptions
 	}
 	
 	def list = {
+		int districtLevel = ConfigurationHolder.config.district.level;
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
 		
-		Cooperative cooperative = Cooperative.get(params.coopId)
+		Cooperative cooperative = Cooperative.get(params.cooperative)
 		List<PbfScore> scores = cooperative.scores;
 		
 		def max = Math.min(params['offset']+params['max'],scores.size())
 		
-		render (view: '/admin/organisation/list', model:[
-			template: "listScores",
+		render (view: '/admin/list', model:[
+			template: "/organisation/scoreList",
 			entities: scores.subList(params['offset'], max),
+			showLocation: false,
 			entityCount: scores.size(),
-			code: "admin.score.label"
+			targetURI: getTargetURI(),
+			code: getLabel()
 			])
 	}
 

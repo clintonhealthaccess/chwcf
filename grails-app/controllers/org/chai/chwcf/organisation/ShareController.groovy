@@ -29,6 +29,8 @@ package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.utils.Utils;
+
 
 /**
  * @author Jean Kahigiso M.
@@ -41,50 +43,58 @@ class ShareController  extends AbstractEntityController {
 		return Share.get(id);
 	}
 	def createEntity(){
-		return new Share();
+		def entity = new Share();
+		if(!params['cooperative.id']) entity.cooperative= Cooperative.get(params.int('cooperative'));
+		return entity;
 	}
 	def getModel(def entity) {
 		
 		[
+			share: entity,
 			]
 	}
 
 	def getTemplate() {
 		return "/admin/organisation/createShare"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.organisation.share.label"
 	}
 	def bindParams(def entity) {
-		entity.properties = params
+		bindData(entity,params,[exclude:['startDate','endDate']])
+		
+		//FIXME If you find better solution to do this please feel free to fix
+		if(params.startDate!='' && params.startDate!=null){
+			entity.startDate=Utils.parseDate(params.startDate);
+		}else
+			entity.startDate=null;
+			
+		if(params.endDate!='' && params.endDate!=null){
+			entity.endDate=Utils.parseDate(params.endDate);
+		}else
+			entity.endDate=null;
 		
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
-		if (params.descriptions!=null) entity.descriptions = params.descriptions
 	}
 	
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
 		
-		Cooperative cooperative = Cooperative.get(params.coopId)
+		Cooperative cooperative = Cooperative.get(params.cooperative)
 		List<Share> shares = cooperative.shares;
 		
 		def max = Math.min(params['offset']+params['max'],shares.size())
 		
-		render (view: '/admin/organisation/list', model:[
-			template: "listShares",
+		render (view: '/admin/list', model:[
+			template: "/organisation/shareList",
 			entities: shares.subList(params['offset'], max),
+			showLocation: false,
 			entityCount: shares.size(),
-			code: "admin.share.label"
+			targetURI: getTargetURI(),
+			code: getLabel()
 			])
 	}
 

@@ -56,6 +56,7 @@ public class CategoryType extends Translatable {
 
 	private Long id;
 	private Integer order;
+	private String code;
 	private List<Category> categories = new ArrayList<Category>();
 
 	@Id
@@ -76,6 +77,14 @@ public class CategoryType extends Translatable {
 
 	public void setOrder(Integer order) {
 		this.order = order;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+	@Basic(optional = true)
+	public String getCode() {
+		return code;
 	}
 
 	@OneToMany(targetEntity = Category.class, mappedBy = "type")

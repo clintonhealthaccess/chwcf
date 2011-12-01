@@ -48,10 +48,14 @@ import org.chai.chwcf.organisation.Cooperative;
 import org.chai.chwcf.organisation.PbfScore
 import org.chai.chwcf.organisation.Share
 import org.chai.chwcf.organisation.RegistrationLevel;
+import org.chai.chwcf.person.Member
+import org.chai.chwcf.person.Member.Gender;
 import org.chai.chwcf.person.MemberCategory
 import org.chai.chwcf.Translation;
 import org.chai.chwcf.reports.CostingType
-import org.chai.chwcf.security.ShiroUser
+import org.chai.chwcf.security.PermissionHelper
+import org.chai.chwcf.security.Role
+import org.chai.chwcf.security.User
 import org.chai.chwcf.transaction.Transaction;
 import org.chai.chwcf.transaction.Category;
 import org.chai.chwcf.transaction.CategoryType;
@@ -113,9 +117,17 @@ class Initializer {
 
 			// organisation groups
 			def dh = new OrganisationUnitGroup(name:"District Hospital", uuid: "District Hospital", members: [butaro /*,chk */ ], groupSet: OrganisationUnitGroupSet.findByName('Type'))
-			def hc = new OrganisationUnitGroup(name:"Health Center", uuid: "Health Center", members: [kivuye], groupSet: OrganisationUnitGroupSet.findByName('Type'))
+			def hc = new OrganisationUnitGroup(name:"Health Center", uuid: "Health Center", members: [kivuye,gitare,kinoni,carrefour,nyacyonga], groupSet: OrganisationUnitGroupSet.findByName('Type'))
 			butaro.groups = [dh]
 			kivuye.groups = [hc]
+			gitare.groups= [hc]
+			kinoni.groups= [hc]
+			carrefour.groups= [hc]
+			nyacyonga.groups= [hc]
+			gitare.save(failOnError: true)
+			kinoni.save(failOnError: true)
+			carrefour.save(failOnError: true)
+			nyacyonga.save(failOnError: true)
 			butaro.save(failOnError: true)
 			kivuye.save(failOnError: true)
 			dh.save(failOnError: true)
@@ -131,13 +143,33 @@ class Initializer {
 	}
 	
 	static def createUser(){
-		def admin = new ShiroUser(username: "admin", passwordHash: new Sha256Hash("kamsfany").toHex())
-		def user = new ShiroUser(username: "user", passwordHash: new Sha256Hash("kamsfany").toHex())
-		admin.addToPermissions("*:*")
+		
+	    createPermission();
+		createRole();
+										
+		def admin = new User(username: "admin", passwordHash: new Sha256Hash("admin").toHex(), active: true)
+		admin.addToRoles(Role.findByName("superUser"))
 		admin.save(failOnError: true, flush:true)
-		user.save(failOnError: true, flush:true)
+		
+		def mohAdmin=new User(username: "mohadmin", passwordHash: new Sha256Hash("mohadmin").toHex() , active: true)
+		mohAdmin.addToRoles(Role.findByName("mohAdmin"))
+		mohAdmin.save(failOnError: true, flush:true)
+
+		def mohSupervisor = new User(username: "mohsupervisor", passwordHash: new Sha256Hash("mohsupervisor").toHex(), active: true)
+		mohSupervisor.addToRoles(Role.findByName("mohSupervisor"))
+		mohSupervisor.save(failOnError: true, flush:true)
+		
+		def district = new User(username: "burera", organisation: OrganisationUnit.findByName("Burera").id, passwordHash: new Sha256Hash("burera").toHex() , active: true)
+		district.addToRoles(Role.findByName("districtLevel"))
+		district.save(failOnError: true, flush:true)
+			
+		def clerc = new User(username: "clerc", organisation: OrganisationUnit.findByName("Kivuye HC").id, passwordHash: new Sha256Hash("clerc").toHex(), active: true)
+		clerc.addToRoles(Role.findByName("dataClerc"))
+		clerc.save(failOnError: true, flush:true)
+		
 	}
 	
+		
 	static def createTransaction(){
 		
 		if(!Transaction.count()){
@@ -171,11 +203,8 @@ class Initializer {
 			asm.save(failOnError: true, flush:true)
 			
 			
-			
-
-			
 			//Type of Activity
-			def liveStock = new Activity(names:j(["en":"Live Stock","fr":"BŽtail"]), descriptions:j([:]),order: 1)
+			def liveStock = new Activity(names:j(["en":"Live Stock","fr":"Bï¿½tail"]), descriptions:j([:]),order: 1)
 			def agriculture = new Activity(names:j(["en":"Agriculture","fr":"Agriculture fr"]), descriptions:j([:]),order: 3)
 			def eggPoultryfarm = new Activity(names:j(["en":"Egg Poultry Farm","fr":"Ferme avicole d'oeufs"]), descriptions:j([:]),order: 2)
 			def sellOfFertilizer = new Activity(names:j(["en":"Sell Of Fertilizer","fr":"Vente d'engrais"]), descriptions:j([:]),order: 4)
@@ -248,23 +277,62 @@ class Initializer {
 			 
 			 gitareCoop.save(failOnError: true, flush:true)
 			 
+			 			 
+			 def member1 = new Member(
+				 familyName:"Kahigiso",
+				 otherNames:"Muchika Jean",
+				 phoneNumber:"0788303174",
+				 email:"jkahigiso@clinton.org",
+				 idNumber:872837,
+				 joinDate:getDate(2002,9,3),
+				 dob:getDate(1980,2,3),
+				 gender:Gender.MALE
+				 );
+			 
+			 gitareCoop.addMember(member1);
+			 binome.addMember(member1);
+			 gitareCoop.save(failOnError: true, flush:true)
+			 binome.save(failOnError: true, flush:true)
+			 
+			 def member2 = new Member(
+				 familyName:"Lister",
+				 otherNames:"Susan",
+				 phoneNumber:"0788304474",
+				 email:"slister@clinton.org",
+				 idNumber:872832,
+				 joinDate:getDate(2000,9,3),
+				 dob:getDate(1988,10,3),
+				 gender:Gender.FEMALE
+				 );
+			 
+			 gitareCoop.addMember(member2);
+			 asm.addMember(member2);
+			 gitareCoop.save(failOnError: true, flush:true)
+			 asm.save(failOnError: true, flush:true)
 			 
 			 
-//			def bumgweCoop = OrganisationUnit.findByShortName("RW,N,BU,BUNHC");
-//			def kinoniCoop = OrganisationUnit.findByShortName("RW,N,BU,KINHC");
-//			
-//			def nyacyongaCoop = OrganisationUnit.findByShortName("RW,N,BU,NYAHC");
-//			def carrefourCoop = OrganisationUnit.findByShortName("RW,N,BU,CARHC");
-//			def gihogweCoop= OrganisationUnit.findByShortName("RW,N,BU,GIHHC");
-//			def jaliCoop = OrganisationUnit.findByShortName("RW,N,BU,JALHC");
+			 def member3 = new Member(
+				 familyName:"Mugeni",
+				 otherNames:"Dusabeysu Soline",
+				 phoneNumber:"0788304484",
+				 email:"smugeni@clinton.org",
+				 idNumber:8728345,
+				 joinDate:getDate(2007,9,3),
+				 dob:getDate(1986,10,3),
+				 gender:Gender.FEMALE
+				 );
 			 
+			 gitareCoop.addMember(member3);
+			 asm.addMember(member3);
+			 gitareCoop.save(failOnError: true, flush:true)
+			 binome.save(failOnError: true, flush:true)
 			 
 			 //Costing Type
-			 def sales = new CostingType(names:j(["en":"Sales","fr":"Ventes"]), descriptions:j(["en":"Sales","fr":"Ventes"]),order: 1);
-			 def totalCost = new CostingType(names:j(["en":"Total Cost","fr":"Cout Total"]), descriptions:j(["en":"Total Cost","fr":"Cout Total"]),order: 3);
-			 def dividend = new CostingType(names:j(["en":"Dividend","fr":"Dividend"]), descriptions:j(["en":"Dividend","fr":"Dividend"]),order: 2);
-			 def totalAsset = new CostingType(names:j(["en":"Total Asset","fr":"Total Asset"]), descriptions:j(["en":"Total Asset","fr":"Total Asset"]),order: 5);
-			 def invenstment = new CostingType(names:j(["en":"Invenstment","fr":"Invenstment"]), descriptions:j(["en":"Invenstment","fr":"Invenstment"]),order: 4);
+			 def sales = new CostingType(names:j(["en":"Sales","fr":"Ventes"]), descriptions:j(["en":"Sales","fr":"Ventes"]),order: 1,code:"sales");
+			 def totalCost = new CostingType(names:j(["en":"Total Cost","fr":"Cout Total"]), descriptions:j(["en":"Total Cost","fr":"Cout Total"]),order: 3,code:"totalCost");
+			 def dividend = new CostingType(names:j(["en":"Dividend","fr":"Dividend"]), descriptions:j(["en":"Dividend","fr":"Dividend"]),order: 2,code:"dividend");
+			 def totalAsset = new CostingType(names:j(["en":"Total Asset","fr":"Total Asset"]), descriptions:j(["en":"Total Asset","fr":"Total Asset"]),order: 5,code:"totalAsset");
+			 def invenstment = new CostingType(names:j(["en":"Invenstment","fr":"Invenstment"]), descriptions:j(["en":"Invenstment","fr":"Invenstment"]),order: 4,code:"invenstment");
 			 
 			 sales.save(failOnError: true, flush:true)
 			 totalCost.save(failOnError: true, flush:true)
@@ -275,9 +343,9 @@ class Initializer {
 			
 			
 			//Transaction Category Type
-			def expense = new CategoryType(names:j(["en":"Expense","fr":"Depense"]), descriptions:j([:]),order: 2);
-			def income = new CategoryType(names:j(["en":"Income","fr":"Revenu"]), descriptions:j([:]),order: 1);
-			def bankTransaction = new CategoryType(names:j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]), descriptions:j([:]),order: 1);
+			def expense = new CategoryType(names:j(["en":"Expense","fr":"Depense"]), descriptions:j([:]),order: 2,code:"expense");
+			def income = new CategoryType(names:j(["en":"Income","fr":"Revenu"]), descriptions:j([:]),order: 1,code:"income");
+			def bankTransaction = new CategoryType(names:j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]), descriptions:j([:]),order: 1,code:"bankTransaction");
 			
 			//Transaction Category
 			
@@ -311,8 +379,8 @@ class Initializer {
 			bankTransaction.save(failOnError: true, flush:true)
 			
 		 	
-			def admin = ShiroUser.findByUsername("admin");
-			def user = ShiroUser.findByUsername("user");
+			def admin = User.findByUsername("admin");
+			def burera = User.findByUsername("burera");
 			
 			//Transactions
 			def transaction1 = new Transaction(
@@ -321,19 +389,19 @@ class Initializer {
 				enteredBy: admin.id,
 				transactionDate: getDate(2011,3,9),
 				recordedDate: getDate(2011,4,17),
-				description:"Transaction 1",
-				amount:23000
+				description: "Transaction 1",
+				amount: 23000
 				);
 			transaction1.save(failOnError: true, flush:true)
 			
 			def transaction2 = new Transaction(
 				cooperative: kivuyeCoop,
 				category: accountPayable,
-				enteredBy: user.id,
+				enteredBy: burera.id,
 				transactionDate: getDate(2011,3,10),
 				recordedDate: getDate(2011,4,27),
-				description:"Transaction 2",
-				amount:2000
+				description: "Transaction 2",
+				amount: 2000
 				);
 			transaction2.save(failOnError: true, flush:true)
 			
@@ -342,9 +410,197 @@ class Initializer {
 		}
 		
 	}
+		
+	static def createRole(){
+		if(!Role.findByName("superUser")){
+			def superUser = new Role(name: "superUser")
+			superUser.addToPermissions(PermissionHelper.findByPermission("*").permission)
+			superUser.save(failOnError: true, flush:true)
+		}
+		
+		if(!Role.findByName("mohAdmin")){
+			def amohAdmin = new Role(name: "mohAdmin")
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("home:index").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("cooperative:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("transaction:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("report:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:admin").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:activity").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:categoryType").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:memberCategory").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:registrationLevel").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:user").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:role").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:cooperative").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:report").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:myaccount").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("menu:changePassword").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("user:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("role:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("activity:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("memberCategory:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("category:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("categoryType:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("pbfScore:*").permission)	
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("share:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("member:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("supervision:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("training:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("activity:*").permission)
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("registrationLevel:*").permission)
+			amohAdmin.save(failOnError: true, flush:true)
+		}
+		if(!Role.findByName("mohSupervisor")){
+			def mohSupervisor = new Role(name: "mohSupervisor")
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("home:index").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("cooperative:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("cooperative:view").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("menu:cooperative").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("menu:myaccount").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("menu:report").permission)		
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("menu:changePassword").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("transaction:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("share:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("pbfScore:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("activity:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("member:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("supervision:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("training:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("report:*").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("user:newPassword").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("user:saveNewPassword").permission)
+			mohSupervisor.save(failOnError: true, flush:true)
+		}
+		if(!Role.findByName("districtLevel")){
+			def district = new Role(name: "districtLevel")
+			district.addToPermissions(PermissionHelper.findByPermission("home:index").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("menu:cooperative").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("menu:myaccount").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("menu:report").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("menu:changePassword").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("cooperative:list").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("cooperative:view").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("transaction:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("category:getAjaxData").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("share:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("pbfScore:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("activity:list").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("member:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("supervision:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("training:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("report:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("user:newPassword").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("user:saveNewPassword").permission)
+			district.save(failOnError: true, flush:true)
+		}
+		
+		if(!Role.findByName("dataClerc")){
+			def clerc = new Role(name: "dataClerc")
+			clerc.addToPermissions(PermissionHelper.findByPermission("home:index").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("menu:entry").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("menu:report").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("menu:myaccount").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("menu:changePassword").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("cooperative:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("cooperative:view").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("transaction:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("transaction:edit").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("transaction:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("transaction:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("category:getAjaxData").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("report:report").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("report:download").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:edit").permission)	
+			clerc.addToPermissions(PermissionHelper.findByPermission("share:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("share:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("share:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("share:edit").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("member:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("member:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("member:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("member:edit").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("supervision:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("supervision:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("supervision:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("supervision:edit").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("training:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("training:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("training:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("training:edit").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("user:newPassword").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("user:saveNewPassword").permission)
+			clerc.save(failOnError: true, flush:true)
+		}
+		
+	}
 	
-	
-
+	static def createPermission(){
+		//Super User Permissions
+		if(!PermissionHelper.findByPermission("*")) new PermissionHelper(permission:"*").save(failOnError: true, flush:true);
+		//Menu Permissions
+		if(!PermissionHelper.findByPermission("menu:admin")) new PermissionHelper(permission:"menu:admin").save(failOnError: true, flush:true);
+		if(!PermissionHelper.findByPermission("menu:entry")) new PermissionHelper(permission:"menu:entry").save(failOnError: true, flush:true);
+		if(!PermissionHelper.findByPermission("menu:cooperative")) new PermissionHelper(permission:"menu:cooperative").save(failOnError: true, flush:true);
+		if(!PermissionHelper.findByPermission("menu:report")) new PermissionHelper(permission:"menu:report").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:myaccount")) new PermissionHelper(permission:"menu:myaccount").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:changePassword")) new PermissionHelper(permission:"menu:changePassword").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:activity")) new PermissionHelper(permission:"menu:activity").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:categoryType")) new PermissionHelper(permission:"menu:categoryType").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:costingType")) new PermissionHelper(permission:"menu:costingType").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:memberCategory")) new PermissionHelper(permission:"menu:memberCategory").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:registrationLevel")) new PermissionHelper(permission:"menu:registrationLevel").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:user")) new PermissionHelper(permission:"menu:user").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:permissionHelper")) new PermissionHelper(permission:"menu:permissionHelper").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:role")) new PermissionHelper(permission:"menu:role").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("menu:*")) new PermissionHelper(permission:"menu:*").save(failOnError: true, flush:true)
+		
+		//Entity controller common permissions
+		def controllerList = []
+		controllerList.add("user")
+		controllerList.add("role")
+		controllerList.add("permissionHelper")
+		controllerList.add("cooperative")
+		controllerList.add("transaction")
+		controllerList.add("costingType")
+		controllerList.add("registrationLevel")
+		controllerList.add("pbfScore")
+		controllerList.add("share")
+		controllerList.add("activity")
+		controllerList.add("memberCategory")
+		controllerList.add("categoryType")
+		controllerList.add("category")
+		controllerList.add("member")
+		controllerList.add("supervision")
+		controllerList.add("training")
+		
+		for(def controller: controllerList){
+			if(!PermissionHelper.findByPermission(controller+":list")) new PermissionHelper(permission:controller+":list").save(failOnError: true, flush:true)
+			if(!PermissionHelper.findByPermission(controller+":create")) new PermissionHelper(permission:controller+":create").save(failOnError: true, flush:true)
+			if(!PermissionHelper.findByPermission(controller+":save")) new PermissionHelper(permission:controller+":save").save(failOnError: true, flush:true)
+			if(!PermissionHelper.findByPermission(controller+":edit")) new PermissionHelper(permission:controller+":edit").save(failOnError: true, flush:true)
+			if(!PermissionHelper.findByPermission(controller+":delete")) new PermissionHelper(permission:controller+":delete").save(failOnError: true, flush:true)
+			if(!PermissionHelper.findByPermission(controller+":*")) new PermissionHelper(permission:controller+":*").save(failOnError: true, flush:true)
+		}
+		//Uncommon permissions 
+		if(!PermissionHelper.findByPermission("home:index")) new PermissionHelper(permission:"home:index").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("user:newPassword")) new PermissionHelper(permission:"user:newPassword").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("user:saveNewPassword")) new PermissionHelper(permission:"user:saveNewPassword").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("permissionHelper:getAjaxData")) new PermissionHelper(permission:"permissionHelper:getAjaxData").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("cooperative:view")) new PermissionHelper(permission:"cooperative:view").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("cooperative:getAjaxData")) new PermissionHelper(permission:"cooperative:getAjaxData").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("transaction:approve")) new PermissionHelper(permission:"transaction:approve").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("report:report")) new PermissionHelper(permission:"report:report").save(failOnError: true, flush:true);
+		if(!PermissionHelper.findByPermission("report:download")) new PermissionHelper(permission:"report:download").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("report:*")) new PermissionHelper(permission:"report:*").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("activity:getAjaxData")) new PermissionHelper(permission:"activity:getAjaxData").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("role:getAjaxData")) new PermissionHelper(permission:"role:getAjaxData").save(failOnError: true, flush:true)
+		if(!PermissionHelper.findByPermission("category:getAjaxData")) new PermissionHelper(permission:"category:getAjaxData").save(failOnError: true, flush:true)
+		
+		
+	}
 
 	public static Date getDate( int year, int month, int day ) {
 		final Calendar calendar = Calendar.getInstance();

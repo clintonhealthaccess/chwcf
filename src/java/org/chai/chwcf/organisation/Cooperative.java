@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -61,10 +60,10 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 
 @Entity(name = "Cooperative")
 @Table(name = "chwcf_cooperative")
-public class Cooperative implements Serializable{
+public class Cooperative implements Serializable {
 
 	private static final long serialVersionUID = 2480175919930656867L;
-	
+
 	private Long id;
 	private String name;
 	private String description;
@@ -76,7 +75,9 @@ public class Cooperative implements Serializable{
 	private List<Share> shares = new ArrayList<Share>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private List<Transaction> transactions = new ArrayList<Transaction>();
-	private List<PbfScore> scores= new ArrayList<PbfScore>();
+	private List<PbfScore> scores = new ArrayList<PbfScore>();
+	private List<Training> trainings = new ArrayList<Training>();
+	private List<Supervision> supervisions = new ArrayList<Supervision>();
 
 	@Id
 	@GeneratedValue
@@ -91,7 +92,8 @@ public class Cooperative implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-    @Basic(optional=false)
+
+	@Basic(optional = false)
 	public String getName() {
 		return name;
 	}
@@ -107,19 +109,19 @@ public class Cooperative implements Serializable{
 	public void setOrganisationUnit(OrganisationUnit organisationUnit) {
 		this.organisationUnit = organisationUnit;
 	}
-	
+
 	@ManyToOne(targetEntity = OrganisationUnit.class, optional = false)
 	@JoinColumn(nullable = false)
 	public OrganisationUnit getOrganisationUnit() {
 		return organisationUnit;
 	}
 
-
 	public void setMembers(List<Member> members) {
 		this.members = members;
 	}
+
 	@OneToMany(targetEntity = Member.class, mappedBy = "cooperative")
-	@Cascade({CascadeType.ALL, CascadeType.DELETE})
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
 	public List<Member> getMembers() {
 		return members;
 	}
@@ -127,23 +129,22 @@ public class Cooperative implements Serializable{
 	public void setRegistrationNumber(String registrationNumber) {
 		this.registrationNumber = registrationNumber;
 	}
-    @Column(unique=true)
+
 	public String getRegistrationNumber() {
 		return registrationNumber;
 	}
-    
-   
+
 	public void setRegistrationLevel(RegistrationLevel registrationLevel) {
 		this.registrationLevel = registrationLevel;
 	}
-	
+
 	@ManyToOne(targetEntity = RegistrationLevel.class, optional = false)
-	@JoinColumn(nullable = true)
+	@JoinColumn(nullable = false)
 	public RegistrationLevel getRegistrationLevel() {
 		return registrationLevel;
 	}
-	
-	@Basic(optional = true)
+
+	@Basic(optional = false)
 	@Temporal(TemporalType.DATE)
 	public Date getCreateDate() {
 		return createDate;
@@ -156,10 +157,10 @@ public class Cooperative implements Serializable{
 	public void setShares(List<Share> shares) {
 		this.shares = shares;
 	}
-	
-    @OneToMany(targetEntity=Share.class, mappedBy = "cooperative")
-    @Cascade({CascadeType.ALL, CascadeType.DELETE})
-    @OrderBy(value = "order")
+
+	@OneToMany(targetEntity = Share.class, mappedBy = "cooperative")
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
+	@OrderBy(value = "order")
 	public List<Share> getShares() {
 		return shares;
 	}
@@ -187,15 +188,36 @@ public class Cooperative implements Serializable{
 	public void setScores(List<PbfScore> scores) {
 		this.scores = scores;
 	}
-	
+
 	@OneToMany(targetEntity = PbfScore.class, mappedBy = "cooperative")
 	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
 	@OrderBy(value = "order")
 	public List<PbfScore> getScores() {
 		return scores;
 	}
-	
-	
+
+	public void setTrainings(List<Training> trainings) {
+		this.trainings = trainings;
+	}
+
+	@OneToMany(targetEntity = Training.class, mappedBy = "cooperative")
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
+	@OrderBy(value = "order")
+	public List<Training> getTrainings() {
+		return trainings;
+	}
+
+	public void setSupervisions(List<Supervision> supervisions) {
+		this.supervisions = supervisions;
+	}
+
+	@OneToMany(targetEntity = Supervision.class, mappedBy = "cooperative")
+	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
+	@OrderBy(value = "order")
+	public List<Supervision> getSupervisions() {
+		return supervisions;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -220,7 +242,6 @@ public class Cooperative implements Serializable{
 			return false;
 		return true;
 	}
-	
 
 	@Override
 	public String toString() {
@@ -240,25 +261,42 @@ public class Cooperative implements Serializable{
 		activities.add(activity);
 		Collections.sort(activities);
 	}
-	
+
 	@Transient
-	public void addMember(Member member){
+	public void addMember(Member member) {
 		member.setCooperative(this);
 		members.add(member);
-		
+
 	}
-	
+
 	@Transient
-	public void addScore(PbfScore score){
+	public void addScore(PbfScore score) {
 		score.setCooperative(this);
 		scores.add(score);
 		Collections.sort(scores);
-		
+
 	}
+
 	@Transient
-	public void addShare(Share share){
+	public void addShare(Share share) {
 		share.setCooperative(this);
 		shares.add(share);
 		Collections.sort(shares);
-;	}
+	}
+
+	@Transient
+	public void addTraining(Training training) {
+		training.setCooperative(this);
+		trainings.add(training);
+		Collections.sort(trainings);
+
+	}
+
+	@Transient
+	public void addSupervision(Supervision supervision) {
+		supervision.setCooperative(this);
+		supervisions.add(supervision);
+		Collections.sort(supervisions);
+
+	}
 }

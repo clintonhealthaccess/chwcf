@@ -57,6 +57,7 @@ public class Share extends Translatable {
 	private Date endDate;
 	private Integer share;
 	private Cooperative cooperative;
+	private boolean current=false;
 
 	@Id
 	@GeneratedValue
@@ -88,7 +89,7 @@ public class Share extends Translatable {
 		this.startDate = startDate;
 	}
 	
-	@Basic(optional = false)
+	@Basic(optional = true)
 	@Temporal(TemporalType.DATE)
 	public Date getEndDate() {
 		return endDate;
@@ -114,6 +115,14 @@ public class Share extends Translatable {
 
 	public void setCooperative(Cooperative cooperative) {
 		this.cooperative = cooperative;
+	}
+
+	public void setCurrent(boolean current) {
+		this.current = current;
+	}
+
+	public boolean isCurrent() {
+		return current;
 	}
 
 	@Override

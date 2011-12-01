@@ -45,9 +45,8 @@ public abstract class Person implements Serializable {
 	private static final long serialVersionUID = -4727309308501688723L;
 	
 	private boolean active = true;
-	private String firstName;
-	private String lastName;
-	private String middleName;
+	private String familyName;
+	private String otherNames;
 	private String phoneNumber;
 	private String email;
 	
@@ -57,26 +56,20 @@ public abstract class Person implements Serializable {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
+	}
+	@Column(nullable=false)
+	public String getFamilyName() {
+		return familyName;
+	}
+	public void setOtherNames(String otherNames) {
+		this.otherNames = otherNames;
 	}
 	@Column(nullable=true)
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	@Column(nullable=true)
-	public String getLastName() {
-		return lastName;
-	}
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-	@Column(nullable=true)
-	public String getMiddleName() {
-		return middleName;
+	public String getOtherNames() {
+		return otherNames;
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;

@@ -57,6 +57,7 @@ public class CostingType extends Translatable {
 	
 	private Long id;
 	private Integer order;
+	private String code;
 	private List<Category> categories = new ArrayList<Category>(); 
 	
 	@Id
@@ -76,6 +77,13 @@ public class CostingType extends Translatable {
 		return order;
 	}
 	
+	public void setCode(String code) {
+		this.code = code;
+	}
+	@Basic(optional=true)
+	public String getCode() {
+		return code;
+	}
 	public void setCategories(List<Category> categories) {
 		this.categories = categories;
 	}

@@ -29,6 +29,9 @@ package org.chai.chwcf.transaction
 
 import org.chai.chwcf.AbstractEntityController;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.chai.chwcf.reports.CostingType;
+import org.chai.chwcf.transaction.CategoryService;
+import org.apache.commons.collections.*;
 
 /**
  * @author Jean Kahigiso M.
@@ -36,57 +39,76 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder;
  */
 @SuppressWarnings("deprecation")
 class CategoryController extends AbstractEntityController {
-	
+	CategoryService categoryService;
+
 	def getEntity(def id){
 		return Category.get(id);
 	}
 	def createEntity(){
-		return new Category();
+		def entity = new Category();
+		if(!params.int('type.id')) entity.type = CategoryType.get(params.int('typeId'));
+		return entity;
 	}
 	def getModel(def entity) {
-		
 		[
-			]
+					category: entity,
+					types: CategoryType.list(),
+					costingTypes: CostingType.list()
+				]
 	}
 
 	def getTemplate() {
 		return "/admin/transaction/createCategory"
 	}
-	def validateEntity(def entity) {
-		return entity.validate()
-	}
-
-	def saveEntity(def entity) {
-		entity.save();
-	}
-	def deleteEntity(def entity) {
-		entity.delete()
+	def getLabel() {
+		return "admin.transaction.category.label"
 	}
 	def bindParams(def entity) {
 		entity.properties = params
-		
+
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
 		if (params.names!=null) entity.names = params.names
 		if (params.descriptions!=null) entity.descriptions = params.descriptions
+		if(!params.list('costingTypes.id').isEmpty())
+			for(String type: params.list('costingTypes.id')){
+				def costingType = CostingType.get(Integer.parseInt(type));
+				if(!entity.costingTypes.contains(costingType)) entity.addCostingType(costingType);
+			}
 	}
-	
+
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
-		
-		CategoryType type = CategoryType.get(params.catTypeId);
+
+		CategoryType type = CategoryType.get(params.int('typeId'));
 		List<Category> categories = type.categories;
-				
+		if(!categories.isEmpty())
+			Collections.sort(categories);
+
 		def max = Math.min(params['offset']+params['max'],categories.size())
-		
-		render (view: '/admin/transaction/list', model:[
-			template:"listCategories",
-			entities: categories.subList(params['offset'],max),
-			entityCount:  categories.size(),
-			code:"admin.category.label"
-			])
+
+		render (view: '/admin/list', model:[
+					template:"/transaction/categoryList",
+					entities: categories.subList(params['offset'],max),
+					showLocation: false,
+					entityCount:  categories.size(),
+					targetURI: getTargetURI(),
+					code: getLabel()
+				])
 	}
-
-
+	
+	def getAjaxData = {
+		def categories = categoryService.searchCategory(params['term']);
+		render(contentType:"text/json") {
+			elements = array {
+				categories.each { category ->
+					elem (
+						id: category.id,
+						category: g.i18n(field: category.names)+' &rarr; ['+ g.i18n(field: category.type.names)+']'
+					)
+				}
+			}
+		}
+	}
 }

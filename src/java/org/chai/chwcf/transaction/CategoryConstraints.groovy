@@ -32,5 +32,5 @@ package org.chai.chwcf.transaction
  *
  */
 constraints = {
-	type(nullable: false, blank: false);
+	type(nullable: false);
 }

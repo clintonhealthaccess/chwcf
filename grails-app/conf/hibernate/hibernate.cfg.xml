@@ -8,13 +8,14 @@
 	<session-factory>
 	
 		<mapping class="org.chai.chwcf.Translation" />
-		<mapping class="org.chai.chwcf.Period" />
 		
 		<mapping class="org.chai.chwcf.organisation.Cooperative" />
 		<mapping class="org.chai.chwcf.organisation.RegistrationLevel" />
 		<mapping class="org.chai.chwcf.organisation.Activity" />
 		<mapping class="org.chai.chwcf.organisation.PbfScore" />
 		<mapping class="org.chai.chwcf.organisation.Share" />
+		<mapping class="org.chai.chwcf.organisation.Training" />
+		<mapping class="org.chai.chwcf.organisation.Supervision" />
 		
 		<mapping class="org.chai.chwcf.person.Person" />
 		<mapping class="org.chai.chwcf.person.Member" />
