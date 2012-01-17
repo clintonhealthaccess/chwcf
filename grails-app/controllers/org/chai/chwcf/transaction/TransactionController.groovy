@@ -40,6 +40,7 @@ import org.chai.chwcf.organisation.CooperativeService;
 import org.chai.chwcf.utils.Utils;
 import org.apache.shiro.SecurityUtils
 import org.chai.chwcf.transaction.Transaction
+import org.chai.chwcf.transaction.TransactionService
 /**
  * @author Jean Kahigiso M.
  *
@@ -47,7 +48,9 @@ import org.chai.chwcf.transaction.Transaction
 @SuppressWarnings("deprecation")
 class TransactionController extends AbstractEntityController {
 	OrganisationService organisationService;
+	TransactionService transactionService;
 	int districtLevel = ConfigurationHolder.config.district.level;
+	int max = ConfigurationHolder.config.last.entered.trans.list.max;
 
 	def getEntity(def id){
 		return Transaction.get(id);
@@ -58,12 +61,16 @@ class TransactionController extends AbstractEntityController {
 		return entity;
 	}
 	def getModel(def entity) {
+		List<Transaction> transactions= transactionService.getTransactions(getUser(), entity.cooperative, max);  
 		def readonly = false
 		if (entity.id != null) 
 			if (!canApprove(entity) && entity.approval == true) 
-			   readonly = true;
+			   readonly = true;   
+			   
 		[
 			transaction:entity,
+			entities: transactions,
+			listTemplate: "/admin/transaction/transactionList",
 			categories: Category.list(),
 			readonly: readonly
 		]
@@ -105,11 +112,9 @@ class TransactionController extends AbstractEntityController {
 			if(Utils.parseDate(params.transactionDate)!=null)
 				entity.transactionDate=Utils.parseDate(params.transactionDate);
 			else{
-				//transactionDate.errors.rejectValue('transactionDate','transaction.transactionDate.valuenotadate')
 				entity.transactionDate=null
 			}
 		}else{
-			//transactionDate.errors.rejectValue('transactionDate','transaction.transactionDate.valuenotadate')
 			entity.transactionDate=null
 		}
 
@@ -129,9 +134,13 @@ class TransactionController extends AbstractEntityController {
 			}
 		}
         if(cooperative!=null)
-			transactions = Transaction.findAllByCooperative(cooperative);
-		if(!transactions.isEmpty())
-			Collections.sort(transactions,new TransactionSorter())
+			if(!params['sort']){
+				transactions = Transaction.findAllByCooperative(cooperative);
+				if(!transactions.isEmpty())
+					Collections.sort(transactions,new TransactionSorter())
+			}else{
+				transactions = Transaction.findAllByCooperative(cooperative,[sort:params['sort'],order:params['order']]);
+			}	
 
 		def max = Math.min(params['offset']+params['max'],transactions.size())
 
@@ -139,6 +148,7 @@ class TransactionController extends AbstractEntityController {
 					template: "/transaction/transactionList",
 					entities: transactions.subList(params['offset'], max),
 					showLocation: false,
+					cooperative: cooperative,
 					entityCount: transactions.size(),
 					targetURI: getTargetURI(),
 					code: getLabel()

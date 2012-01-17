@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.chai.chwcf.organisation.Cooperative;
-import org.hibernate.annotations.Index;
 
 /**
  * @author Jean Kahigiso M.
@@ -57,7 +56,7 @@ public class Transaction implements Serializable {
 	private Long id;
 	private Cooperative cooperative;
 	private Category category;
-	private Integer enteredBy;
+	private Long enteredBy;
 	private Integer validatedBy;
 	private Date transactionDate;
 	private Date recordedDate;
@@ -96,11 +95,11 @@ public class Transaction implements Serializable {
 		this.category = category;
 	}
 	
-	public void setEnteredBy(Integer enteredBy) {
+	public void setEnteredBy(Long enteredBy) {
 		this.enteredBy = enteredBy;
 	}
     @Basic(optional=false)
-	public Integer getEnteredBy() {
+	public Long getEnteredBy() {
 		return enteredBy;
 	}
 

@@ -6,7 +6,7 @@
 		<h3 class="title">Cooperative Transaction Entry Form</h3>
 		<div class="clear"></div>
 	</div>
-	<g:form url="[controller:'transaction', action:'save', params: [targetURI: targetURI]]" useToken="true">
+	<g:form url="[controller:'transaction', action:'save', params: [targetURI: '/transaction/create/'+transaction.cooperative.id]]" useToken="true">
 		<div class="row">
 			<g:if test="${transaction.id != null}">
 				<label>Entered By</label>
@@ -74,6 +74,13 @@
 			</a>
 		</div>
 	</g:form>
+	<div class="main">
+		<div class="row">
+			<g:if test="${!entities.isEmpty()}">
+		 		<g:render template="${listTemplate}" model="[entities: entities,cooperative: transaction.cooperative]"/>
+			</g:if>
+		</div>
+	</div>
 	<div class="clear"></div>
 </div>
 <script type="text/javascript">

@@ -63,6 +63,12 @@ class CategoryController extends AbstractEntityController {
 	def getLabel() {
 		return "admin.transaction.category.label"
 	}
+	
+	def deleteEntity(def entity) {
+		if(entity.transactions.size()==0 && entity.costingTypes.size()==0 )
+			entity.delete()
+	}
+	
 	def bindParams(def entity) {
 		entity.properties = params
 

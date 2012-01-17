@@ -161,6 +161,7 @@ site.languages=["en", "fr"]
 site.fallback.language="en"
 site.admin=true
 site.entity.list.max=32
+last.entered.trans.list.max=10
 
 info.group.level=3
 district.level=3
@@ -169,6 +170,7 @@ facility.group.type=["Health Center"]
 facility.type.group="Type"
 report.start.year=2004
 report.types=["Net Income","Retained Earnings","Total Cash Flow","Total Assets"]
+report.header=["Province","District","Health Facility","Cooperative"]
 
 
 

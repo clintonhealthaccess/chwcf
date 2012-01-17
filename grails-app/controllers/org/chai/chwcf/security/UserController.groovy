@@ -46,7 +46,7 @@ class UserController extends AbstractEntityController {
 	int districtLevel =ConfigurationHolder.config.district.level
 	int facilityLevel = ConfigurationHolder.config.facility.level;
 	def facilityGroups =ConfigurationHolder.config.facility.group.type;
-
+	
 	def getEntity(def id) {
 		return User.get(id)
 	}
@@ -113,15 +113,16 @@ class UserController extends AbstractEntityController {
 	}
 	
 	def newPassword ={
+		def user= getUser();
+		if(params.int("user"))
+			user= User.get(params.int('user'))
 		this.getNewPasswordModel(null,user);
 	}
 	
 	def saveNewPassword={ NewPasswordCommand  cmd ->
-		def user=null
+		def user= getUser();
 		if(params.int('user'))
 			user= User.get(params.int('user'))
-		else
-			user = getUser();
 			
 		if (!cmd.hasErrors()) {
 			def username=user.username

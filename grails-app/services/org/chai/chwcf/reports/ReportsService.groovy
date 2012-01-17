@@ -113,15 +113,16 @@ class ReportsService {
 	}
 	
 	// returns the first day of each month between startDate and endDate
-	private List<Date> getMonths(Date startDate, Date endDate) {
+	public static List<Date> getMonths(Date startDate, Date endDate) {
 		List<Date> result = new ArrayList<Date>();
 		Calendar calendar = Utils.getFirstOfMonthCalendar(startDate)
 		Date month = calendar.getTime()
-		while (month.before(endDate)) {
+		while (!month.equals(endDate)) {
 			result.add(month);
 			calendar.add(Calendar.MONTH, 1)
 			month = calendar.getTime()
 		}
+		result.add(Utils.getFirstOfMonthCalendar(endDate).getTime());
 		return result;
 	}  
 	

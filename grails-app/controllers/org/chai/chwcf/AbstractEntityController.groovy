@@ -73,7 +73,6 @@ abstract class AbstractEntityController {
 
 	def delete = {		
 		def entity = getEntity(params.int('id'));
-		if (log.isInfoEnabled()) log.info("deleting entity: "+entity)
 		
 		if (entity != null) {
 			try {
@@ -95,7 +94,6 @@ abstract class AbstractEntityController {
 	
 	def edit = {
 		def entity = getEntity(params.int('id'));
-		if (log.isInfoEnabled()) log.info("editing entity: "+entity+'===>'+getTemplate());
 
 		if (entity == null) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: getLabel(), default: 'entity'), params.id])
@@ -128,7 +126,6 @@ abstract class AbstractEntityController {
 	}
 	
 	def saveWithoutTokenCheck = {
-		log.debug ('saving entity with params:'+params)
 		
 		def entity = getEntity(params.int('id'));
 		if (entity == null) {

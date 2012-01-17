@@ -13,16 +13,20 @@
 			<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 			  <td>
 				<ul class="horizontal">
-						<li>
-							<a class="edit-link" href="${createLinkWithTargetURI(controller: 'costingType', action:'edit', params:[id: type?.id])}">
-								<g:message code="default.link.edit.label" default="Edit" />
-							</a>
-						</li>
-						<li>
-							<a class="delete-link" href="${createLinkWithTargetURI(controller: 'costingType', action:'delete', params:[id: type?.id])}" onclick="return confirm('\${message(code: 'default.link.delete.confirm.message', default: 'Are you sure?')}');">
-								<g:message code="default.link.delete.label" default="Delete" />
-							</a>
-						</li>
+						<shiro:hasPermission permission="costingType:edit">
+							<li>
+								<a class="edit-link" href="${createLinkWithTargetURI(controller: 'costingType', action:'edit', params:[id: type?.id])}">
+									<g:message code="default.link.edit.label" default="Edit" />
+								</a>
+							</li>
+						</shiro:hasPermission>
+						<shiro:hasPermission permission="costingType:delete">
+							<li>
+								<a class="delete-link" href="${createLinkWithTargetURI(controller: 'costingType', action:'delete', params:[id: type?.id])}" onclick="return confirm('\${message(code: 'default.link.delete.confirm.message', default: 'Are you sure?')}');">
+									<g:message code="default.link.delete.label" default="Delete" />
+								</a>
+							</li>
+						</shiro:hasPermission>
 					</ul>
 				</td>
 				<td><g:i18n field="${type.names}" /></td>

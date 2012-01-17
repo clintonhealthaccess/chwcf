@@ -35,6 +35,7 @@ import org.chai.chwcf.organisation.Organisation
 import org.chai.chwcf.organisation.OrganisationService;
 import org.chai.chwcf.reports.ReportsService;
 import org.chai.chwcf.utils.Utils;
+import org.chai.chwcf.utils.LanguageUtils;
 import org.chai.chwcf.reports.ReportTable;
 import org.chai.chwcf.security.User;
 
@@ -47,9 +48,12 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream
 
 import jxl.Cell;
+import jxl.CellView;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.format.UnderlineStyle;
+import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.WritableCellFormat;
@@ -60,7 +64,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import org.chai.chwcf.transaction.Transaction;
 import org.hibernate.criterion.Restrictions;
-
+	
 /**
  * @author Jean Kahigiso M.
  *
@@ -73,12 +77,13 @@ class ReportController {
 	int startingYear = ConfigurationHolder.config.report.start.year;
 	def reportTypes = ConfigurationHolder.config.report.types;
 	def districtLevel =ConfigurationHolder.config.district.level
+	def reportHeaders =ConfigurationHolder.config.report.header;
 	def now = new Date();
-	private WritableCellFormat timesBoldUnderline;
+	private WritableCellFormat timesBold;
 	private WritableCellFormat times;
 	private static FILE_NAME ="chwcf-reports";
 	private static FILE_TYPE=".xls";
-
+	
 	def report = { 
        this.getModel(null)
 	}
@@ -164,6 +169,11 @@ class ReportController {
 		label = new Label(column, row, data, times);
 		sheet.addCell(label);
 	}
+	private void addColumnHeader(WritableSheet sheet, int column, int row, String data) throws WriteException, RowsExceededException {
+		Label label;
+		label = new Label(column, row, data, timesBold);
+		sheet.addCell(label);
+	}
 	
 	
 	
@@ -172,24 +182,58 @@ class ReportController {
 		WorkbookSettings wbSettings = new WorkbookSettings();
 		wbSettings.setLocale(new Locale("en", "EN"));
 		WritableWorkbook workbook = Workbook.createWorkbook(file, wbSettings);
-		WritableFont timesFpt = new WritableFont(WritableFont.TIMES, 10);
+		
+		//Create a times font
+		WritableFont timesFpt = new WritableFont(WritableFont.TIMES, 12);
 		times = new WritableCellFormat(timesFpt);
+		//Automatically wrap the cells
 		times.setWrap(true);
+		
+		// Create create a bold font
+		WritableFont timesFptBold = new WritableFont(WritableFont.TIMES, 14, WritableFont.BOLD);
+		timesBold = new WritableCellFormat(timesFptBold);
+		//Automatically wrap the cells
+		timesBold.setWrap(true);
+
+		CellView cv = new CellView();
+		cv.setFormat(times);
+		cv.setFormat(timesBold);
+		cv.setAutosize(true);
+
 		
 		Integer i=0;
 		for(Map.Entry<String, ReportTable> entry: reports.entrySet()){
 			workbook.createSheet(entry.getKey(), i);
 			WritableSheet excelSheet = workbook.getSheet(i);
 			ReportTable reportTable = entry.getValue();
-			
+						
+			//Writing header (organisation structure)
+			for(int k=0;k<reportHeaders.size();k++)
+				this.addColumnHeader(excelSheet, k, 0,reportHeaders[k]);
+			//Writing header (months)	
 			for(int j=0;j<reportTable.getMonths().size();j++)
-				this.addDataToCell(excelSheet, j+1, 0,Utils.REPORT_DATE_FORMAT.format(reportTable.getMonths()[j]));
-				
+				this.addColumnHeader(excelSheet, reportHeaders.size()+j, 0,Utils.REPORT_DATE_FORMAT.format(reportTable.getMonths()[j]));	
+	
 			for(int c=0;c<reportTable.getCooperatives().size();c++){
-				this.addDataToCell(excelSheet, 0, c+1,reportTable.getCooperatives()[c].name);
+				Organisation organisation = organisationService.getOrganisation(reportTable.getCooperatives()[c].getOrganisationUnit().id)
+				Organisation tmp = organisation;
+				organisationService.loadParent(tmp)
+				
+				for(int n=reportHeaders.size()-1;n>=0;n--){
+					if(n+1 == reportHeaders.size())
+						this.addDataToCell(excelSheet, n, c+1,reportTable.getCooperatives()[c].name);
+					else{	
+						this.addDataToCell(excelSheet, n, c+1,tmp.name);
+						if(tmp.getParent()!=null){
+							tmp = tmp.getParent();
+							organisationService.loadParent(tmp);
+						}
+					}
+				}	
+					
 				for(int m=0;m<reportTable.getMonths().size();m++){
 					Double value = reportTable.getValue(reportTable.getCooperatives()[c], reportTable.getMonths()[m]);
-					this.addDataToCell(excelSheet, m+1, c+1, Double.toString(value));
+					this.addDataToCell(excelSheet, m+reportHeaders.size(), c+1, Double.toString(value));
 				}
 			}
 			i++;

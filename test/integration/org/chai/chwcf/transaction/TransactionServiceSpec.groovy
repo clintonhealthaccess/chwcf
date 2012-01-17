@@ -71,7 +71,8 @@ class TransactionServiceSpec extends IntegrationTests {
 		then:
 		transactions.equals([transaction1])
 	}
-
+	
+	
 	def "get transactions does not return transaction from other costing type"() {
 		setup:
 		setupOrganisationUnitTree()

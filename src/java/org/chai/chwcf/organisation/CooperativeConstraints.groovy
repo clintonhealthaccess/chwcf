@@ -37,4 +37,7 @@ constraints = {
 	registrationNumber(nullable: true, blank: true, unique: true)
 	registrationLevel(nullable: false, blank: false)
 	createDate(nullable: false, blank: false, max: new Date())
+	numberOfVillages(nullable: true, blank: true, min: 1)
+	numberOfCells(nullable: true, blank: true, min: 1)
+	
 }

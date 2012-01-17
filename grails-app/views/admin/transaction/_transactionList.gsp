@@ -5,9 +5,9 @@
 		<tr>
 			<th></th>
 			<th><g:message code="list.header.transaction.cooperative.label" default="Cooperative" /></th>
-			<th><g:message code="list.header.transaction.category.label" default="Category" /></th>
-			<th><g:message code="list.header.transaction.transaction.date.label" default="Transaction Date" /></th>
-			<th><g:message code="list.header.transaction.recorded.date.label" default="Recorded Date" /></th>
+			<g:sortableColumn property="category.order" defaultOrder="asc" title="Category" params="[cooperative:cooperative.id]" />
+			<g:sortableColumn property="transactionDate" defaultOrder="desc" title="Transaction Date" params="[cooperative:cooperative.id]" />
+			<g:sortableColumn property="recordedDate" defaultOrder="desc" title="Recorded Date" params="[cooperative:cooperative.id]" />
 			<th><g:message code="list.header.transaction.amount.label" default="Amount" /></th>
 			<th><g:message code="list.header.transaction.description.label" default="Description" /></th>
 			<th><g:message code="list.header.transaction.recorded.by.label" default="Recorded By" /></th>

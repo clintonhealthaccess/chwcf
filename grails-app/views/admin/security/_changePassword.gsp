@@ -4,7 +4,7 @@
 		<div class="clear"></div>
 	</div>
 	<g:form url="[controller:'user', action:'saveNewPassword', params: [targetURI: targetURI]]" useToken="true">
-    	<input type="hidden" name="user" value="${user.id}"/>
+    	<input type="hidden" name="user" value="${user?.id}"/>
     	<div class="error-list"></div>
 		<div class="row">
 			<label>Password</label>

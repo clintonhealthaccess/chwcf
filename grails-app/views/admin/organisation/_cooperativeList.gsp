@@ -9,6 +9,8 @@
 			<th><g:message code="list.header.cooperative.create.date.label" default="Create Date" /></th>
 			<th><g:message code="list.header.cooperative.registration.number.label" default="Registration Number" /></th>
 			<th><g:message code="list.header.cooperative.registration.level.label" default="Registration Level" /></th>
+			<th><g:message code="list.header.cooperative.number.of.villages.label" default="Number Of Villages in Catchment Area" /></th>
+			<th><g:message code="list.header.cooperative.number.cells.label" default="Number Of Cells in Catchment Area" /></th>
 			<th><g:message code="entity.list.manage.label" default="Manage" /></th>
 		</tr>
 	</thead>
@@ -46,6 +48,8 @@
 				<td>${Utils.formatDate(cooperative?.createDate)}</td>
 				<td>${cooperative.registrationNumber}</td>
 				<td><g:i18n field="${cooperative.registrationLevel.names}" /></td>
+				<td>${cooperative.numberOfVillages}</td>
+				<td>${cooperative.numberOfCells}</td>
 				<td>					
 					<div class="dropdown subnav-dropdown"> 
 						<a class="selected" href="#" data-type="cooperative"><g:message code="entity.list.manage.label" default="Manage"/></a>

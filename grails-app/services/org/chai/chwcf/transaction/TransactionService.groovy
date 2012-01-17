@@ -40,6 +40,7 @@ import org.chai.chwcf.utils.Utils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Order;
 
 /**
  * @author Jean Kahigiso M.
@@ -70,9 +71,20 @@ class TransactionService {
 
 	List<Transaction> getTransaction(User user){
 		List<Transaction> transactions = null;
-		String userId = Integer.toString(user.id)
 		if(user)
-			transactions = sessionFactory.currentSession.createCriteria(Transaction.class).add(Restrictions.eq('enteredBy',userId)).list();
+			transactions = sessionFactory.currentSession.createCriteria(Transaction.class).add(Restrictions.eq('enteredBy',user.id)).list();
+		return transactions;
+	}
+	
+	List<Transaction> getTransactions(User user,Cooperative currentCooperative,Integer max){
+		List<Transaction> transactions = [];
+		def criteria = sessionFactory.getCurrentSession().createCriteria(Transaction.class)
+		criteria.add(Restrictions.eq('enteredBy',user.id))
+		criteria.add(Restrictions.eq('cooperative',currentCooperative))
+		criteria.add(Restrictions.eq('approval',false))
+		criteria.addOrder(Order.desc("recordedDate"))
+		criteria.setMaxResults(max)
+		transactions = criteria.list();
 		return transactions;
 	}
 

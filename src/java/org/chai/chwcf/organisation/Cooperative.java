@@ -70,6 +70,8 @@ public class Cooperative implements Serializable {
 	private OrganisationUnit organisationUnit;
 	private String registrationNumber;
 	private RegistrationLevel registrationLevel;
+	private Integer numberOfVillages;
+	private Integer numberOfCells;
 	private Date createDate;
 	private List<Member> members = new ArrayList<Member>();
 	private List<Share> shares = new ArrayList<Share>();
@@ -142,6 +144,22 @@ public class Cooperative implements Serializable {
 	@JoinColumn(nullable = false)
 	public RegistrationLevel getRegistrationLevel() {
 		return registrationLevel;
+	}
+
+	public Integer getNumberOfVillages() {
+		return numberOfVillages;
+	}
+
+	public void setNumberOfVillages(Integer numberOfVillages) {
+		this.numberOfVillages = numberOfVillages;
+	}
+
+	public void setNumberOfCells(Integer numberOfCells) {
+		this.numberOfCells = numberOfCells;
+	}
+
+	public Integer getNumberOfCells() {
+		return numberOfCells;
 	}
 
 	@Basic(optional = false)

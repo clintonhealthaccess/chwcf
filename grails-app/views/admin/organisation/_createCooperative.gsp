@@ -40,7 +40,8 @@
 		</div>
 	</div>
 	<g:input name="registrationNumber" bean="${cooperative}" value="${cooperative?.registrationNumber}" label="Registration Number" field="registrationNumber" />
-	
+	<g:input name="numberOfVillages" label="Number Of Villages in Catchment area" bean="${cooperative}" value="${cooperative.numberOfVillages}" field="numberOfVillages"/>
+	<g:input name="numberOfCells" label="Number of Cells in Catchment Area" bean="${cooperative}" value="${cooperative.numberOfCells}" field="numberOfCells"/>
 	<div class="row ${hasErrors(bean:cooperative, field:'activities', 'errors')}">
 		<label><g:message code="admin.cooperative.activities.label" default="Activities"/></label>
 		    <select id="activities-list" name="activities" multiple="true" class="ajax-search-field">

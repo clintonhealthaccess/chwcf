@@ -26,7 +26,7 @@
 		<div class="row">
 			<input type="hidden" name="id" value="${user.id}"/>
 			<a class="new-password-link" href="${createLinkWithTargetURI(controller: 'user', action:'newPassword', params:[user: user?.id])}">
-				<g:message code="default.link.edit.label" default="Change Password" />
+				<g:message code="default.link.change.password.label" default="Change Password" />
 			</a>
 		</div>
 	</g:else>
