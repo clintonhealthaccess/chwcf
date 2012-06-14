@@ -28,7 +28,7 @@
 package org.chai.chwcf.security
 
 import org.chai.chwcf.AbstractEntityController;
-import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH;
 import org.chai.chwcf.security.PermissionHelper;
 import org.chai.chwcf.security.PermissionHelperService;
 /**
@@ -65,8 +65,21 @@ class PermissionHelperController extends AbstractEntityController {
 		entity.properties = params	
 	}
 	
+	def deleteEntity(def entity) {
+		boolean belongToRole = false;
+		List<Role> roles = Role.list();
+		for(Role role: roles)
+			if(role.permissions.contains(entity.permission)){
+				belongToRole=true;
+				break;
+			}
+			
+		if(belongToRole==false)
+			entity.delete();
+	}
+	
 	def list = {
-		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
+		params.max = Math.min(params.max ? params.int('max') : CH.config.site.entity.list.max, 20)
 		params.offset = params.offset ? params.int('offset'): 0
 		List<PermissionHelper> permissions = PermissionHelper.list(params);
 

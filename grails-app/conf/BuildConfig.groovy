@@ -52,6 +52,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+		mavenRepo "http://m2repo.spockframework.org/snapshots"
 		
 		/**
 		* Configure our resolver.
@@ -100,7 +101,7 @@ grails.project.dependency.resolution = {
 		compile ":compass-sass:0.5.5"
 		compile ":svn:1.0.0.M1"
 		
-		test (":spock:0.6-SNAPSHOT") {changing = false}
+		test (":spock:0.6") {changing = false}
 		
 		build ":tomcat:$grailsVersion"
 	}
