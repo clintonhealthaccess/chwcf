@@ -21,3 +21,4 @@ bin/
 build.info
 *.sql
 *.gz
+import_script/**
