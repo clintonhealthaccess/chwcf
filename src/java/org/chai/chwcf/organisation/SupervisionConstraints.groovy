@@ -35,5 +35,5 @@ constraints={
 	cooperative(nullable: false, blank: false)
 	location(nullable: false, blank: false)
 	supervisor(nullable: false, blank: false)
-	date(nullable: false, blank: false)
+	date(nullable: false, blank: false,validator:{it <= new Date()})
 }

@@ -36,7 +36,7 @@ constraints = {
 	organisationUnit(nullable: false, blank: false)
 	registrationNumber(nullable: true, blank: true, unique: true)
 	registrationLevel(nullable: false, blank: false)
-	createDate(nullable: false, blank: false, max: new Date())
+	createDate(nullable: false, blank: false,validator:{it <= new Date()})
 	numberOfVillages(nullable: true, blank: true, min: 1)
 	numberOfCells(nullable: true, blank: true, min: 1)
 	

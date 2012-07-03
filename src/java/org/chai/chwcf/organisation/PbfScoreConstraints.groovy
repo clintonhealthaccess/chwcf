@@ -35,6 +35,6 @@ constraints = {
     cooperative(nullable: false, blank: false)
 	score(nullable: false, blank: false, min: 0, max: 100)
 	amountHCtoCoop(nullable: false, blank: false)
-	startDate(nullable: false, blank: false)
+	startDate(nullable: false, blank: false,validator:{it <= new Date()})
 	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
 }
