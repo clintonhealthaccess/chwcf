@@ -38,8 +38,8 @@ constraints = {
 	category(nullable:false, blank: false)
 	email(nullable: true, blank: true,email:true)
 	gender(nullable:false, blank: false)
-	dob(nullable: false, max: new Date())
-	joinDate(nullable: false, max: new Date(), validator: { val, obj -> return val?.after(obj.dob)})
-	leftDate(nullable: true, max: new Date(), validator: { left, obj -> return left?.after(obj.joinDate)})
+	dob(nullable: false)
+	joinDate(nullable: false,validator: { val, obj -> return val?.after(obj.dob)})
+	leftDate(nullable: true,validator: { left, obj -> return left?.after(obj.joinDate)})
 	active(nullable: true, validator: { val, obj -> return (val==true)?(obj.leftDate==null):true})
 }

@@ -35,7 +35,7 @@ constraints={
 	cooperative(nullable: false, blank: false)
 	location(nullable: false, blank: false)
 	provider(nullable: false, blank: false)
-	startDate(nullable: false, blank: false, max: new Date())
-	endDate(nullable: false, blank: false, max: new Date(), validator: { val, obj -> return val.after(obj.startDate)})
+	startDate(nullable: false, blank: false)
+	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
 
 }

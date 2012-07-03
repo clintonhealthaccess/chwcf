@@ -37,7 +37,7 @@ constraints = {
 	category(nullable: false)
 	enteredBy(nullable: false)
 	amount(nullable: false, blank: false, min: 1)
-	transactionDate(nullable:false, max: new Date())
+	transactionDate(nullable:false)
 	recordedDate(nullable:false,validator: {  val, obj -> return (val?.after(obj.transactionDate) || val?.equals(obj.transactionDate))})
 	approval(nullable: true)
 	approvalDate(nullable: true)
