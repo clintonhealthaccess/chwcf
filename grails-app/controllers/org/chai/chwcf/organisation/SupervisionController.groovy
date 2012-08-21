@@ -58,17 +58,12 @@ class SupervisionController  extends AbstractEntityController {
 		return "admin.organisation.supervision.label"
 	}
 	def bindParams(def entity) {
-		bindData(entity,params,[exclude:['date']])
-		
-		//FIXME If you find better solution to do this please feel free to fix
-		if(params.date!='' && params.date!=null){
-			entity.date=Utils.parseDate(params.date);
-		}else
-			entity.date=null;
-			
+		entity.properties = params
+					
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
-		if (params.names!=null) entity.names = params.names
+		if (params.descriptions!=null) entity.descriptions = params.descriptions
+		entity.names =["en":""]
 	}
 	
 	def list = {

@@ -27,14 +27,70 @@
  */
 package org.chai.chwcf.organisation
 
+import org.chai.chwcf.AbstractEntityController;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.utils.Utils;
+
 /**
  * @author Jean Kahigiso M.
  *
  */
-constraints = {
-    cooperative(nullable: false, blank: false)
-	score(nullable: false, blank: false, min: 0, max: 100)
-	amountHCtoCoop(nullable: false, blank: false)
-	startDate(nullable: false, blank: false,validator:{it <= new Date()})
-	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
+@SuppressWarnings("deprecation")
+class PbfController extends AbstractEntityController {
+	CooperativeService cooperativeService;
+	
+	def getEntity(def id){
+		return Pbf.get(id);
+	}
+	def createEntity(){
+		def entity = new Pbf();
+		if(!params['cooperative.id']) entity.cooperative= Cooperative.get(params.int('cooperative'));
+		return entity;
+	}
+	def getModel(def entity) {
+		
+		[
+			pbf: entity,
+			types:PbfType.list()
+			]
+	}
+
+	def getTemplate() {
+		return "/admin/organisation/createPbf"
+	}
+	
+	def getLabel() {
+		return "admin.organisation.pbf.score.label"
+	}
+
+	def bindParams(def entity) {
+		entity.properties= params
+				
+		// FIXME GRAILS-6967 makes this necessary
+		// http://jira.grails.org/browse/GRAILS-6967
+		if (params.descriptions!=null) entity.descriptions = params.descriptions
+		entity.names =["en":""]
+	}
+	
+	def list = {
+		int districtLevel = ConfigurationHolder.config.district.level;
+		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
+		params.offset = params.offset ? params.int('offset'): 0
+		
+		Cooperative cooperative = Cooperative.get(params.cooperative)
+		List<Pbf> scores = cooperative.scores;
+		
+		def max = Math.min(params['offset']+params['max'],scores.size())
+		
+		render (view: '/admin/list', model:[
+			template: "/organisation/pbfList",
+			entities: scores.subList(params['offset'], max),
+			showLocation: false,
+			entityCount: scores.size(),
+			targetURI: getTargetURI(),
+			code: getLabel()
+			])
+	}
+
+
 }

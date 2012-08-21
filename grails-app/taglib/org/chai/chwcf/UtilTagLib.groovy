@@ -59,6 +59,8 @@ class UtilTagLib {
 		if (attrs["id"] == null) attrs["id"] = 'date-field-one'
 		out << render(template:"/tags/inputDate", model: attrs)
 	}
+	
+	
 
 	def i18nInput = { attrs, body ->
 		if (attrs["type"] == null) attrs["type"] = 'text'
@@ -96,6 +98,10 @@ class UtilTagLib {
 
 	def selectFromEnum = { attrs, body ->
 		out << render(template:"/tags/selectFromEnum", model: attrs)
+	}
+	
+	def selectFromList = { attrs, body ->
+		out << render(template:"/tags/selectFromList", model: attrs)
 	}
 
 	def locales = { attrs, body ->

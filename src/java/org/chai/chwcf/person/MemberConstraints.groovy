@@ -41,5 +41,5 @@ constraints = {
 	dob(nullable: false)
 	joinDate(nullable: false,validator: { val, obj -> return val?.after(obj.dob)})
 	leftDate(nullable: true,validator: { left, obj -> return left?.after(obj.joinDate)})
-	active(nullable: true, validator: { val, obj -> return (val==true)?(obj.leftDate==null):true})
+	active(nullable: true)
 }

@@ -87,7 +87,7 @@ class TransactionController extends AbstractEntityController {
 		return "admin.transaction.label"
 	}
 	def bindParams(def entity) {
-		bindData(entity,params,[exclude:['transactionDate','approval']])
+		bindData(entity,params,[exclude:['approval']])
 
 		if(!params.int('enteredBy')) entity.enteredBy = getUser().id;
 
@@ -107,16 +107,6 @@ class TransactionController extends AbstractEntityController {
 		}
 		
 		if(!entity.recordedDate) entity.recordedDate= new Date();
-
-		if(params.transactionDate!='' && params.transactionDate!=null){
-			if(Utils.parseDate(params.transactionDate)!=null)
-				entity.transactionDate=Utils.parseDate(params.transactionDate);
-			else{
-				entity.transactionDate=null
-			}
-		}else{
-			entity.transactionDate=null
-		}
 
 	}
 

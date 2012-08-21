@@ -39,9 +39,9 @@ public class CooperativeSorter implements Comparator<Cooperative> {
 
 	@Override
 	public int compare(Cooperative coop1, Cooperative coop2) {
-		if (coop1.getName().equals(coop2.getName()))
+		if (coop1.getCommercialName().equals(coop2.getCommercialName()))
 			return coop1.getCreateDate().compareTo(coop2.getCreateDate());
-		return coop1.getName().compareTo(coop2.getName());
+		return coop1.getCommercialName().compareTo(coop2.getCommercialName());
 	}
 
 }

@@ -45,9 +45,12 @@ import org.apache.commons.logging.Log;
 import org.apache.shiro.crypto.hash.Sha256Hash
 import org.chai.chwcf.organisation.Activity
 import org.chai.chwcf.organisation.Cooperative;
-import org.chai.chwcf.organisation.PbfScore
+import org.chai.chwcf.organisation.Pbf
+import org.chai.chwcf.organisation.PbfType;
 import org.chai.chwcf.organisation.Share
 import org.chai.chwcf.organisation.RegistrationLevel;
+import org.chai.chwcf.organisation.Supervision;
+import org.chai.chwcf.organisation.Training;
 import org.chai.chwcf.person.Member
 import org.chai.chwcf.person.Member.Gender;
 import org.chai.chwcf.person.MemberCategory
@@ -187,51 +190,42 @@ class Initializer {
 			
 				
 			//Registration levels
-			def nationalLevel = new RegistrationLevel(names:j(["en":"National","fr":"Nationale"]), descriptions:j([:]),order: 1)
-			def sectorLevel = new RegistrationLevel(names:j(["en":"Sector","fr":"Secteur"]), descriptions:j([:]),order: 3)
-			def districtLevel = new RegistrationLevel(names:j(["en":"District","fr":"District"]), descriptions:j([:]),order: 2)
+			def nationalLevel = newRegistrationLevel(j(["en":"National","fr":"Nationale"]),j([:]),1)
+			def sectorLevel = newRegistrationLevel(j(["en":"Sector","fr":"Secteur"]),j([:]),3)
+			def districtLevel = newRegistrationLevel(j(["en":"District","fr":"District"]),j([:]),2)
 			
-			nationalLevel.save(failOnError: true, flush:true)
-			sectorLevel.save(failOnError: true, flush:true)
-			districtLevel.save(failOnError: true, flush:true)
+			//Pbf types 
+			def typeTB = newPbfType(j(["en":"TB","fr":"TB"]),j([:]),1)
+			def typeVIH = newPbfType(j(["en":"HIV","fr":"HIV"]),j([:]),3)
 			
-			
-			def binome= new MemberCategory(names:j(["en":"Binome","fr":"Binome fr"]), descriptions:j([:]),order: 2)
-			def asm= new MemberCategory(names:j(["en":"ASM","fr":"ASM fr"]), descriptions:j([:]),order: 1)
-			
-			binome.save(failOnError: true, flush:true)
-			asm.save(failOnError: true, flush:true)
+			//Type of members
+			def binome= newMemberCategory(j(["en":"Binome","fr":"Binome fr"]),j([:]),2)
+			def asm= newMemberCategory(j(["en":"ASM","fr":"ASM fr"]),j([:]),1)
+
 			
 			
 			//Type of Activity
-			def liveStock = new Activity(names:j(["en":"Live Stock","fr":"B�tail"]), descriptions:j([:]),order: 1)
-			def agriculture = new Activity(names:j(["en":"Agriculture","fr":"Agriculture fr"]), descriptions:j([:]),order: 3)
-			def eggPoultryfarm = new Activity(names:j(["en":"Egg Poultry Farm","fr":"Ferme avicole d'oeufs"]), descriptions:j([:]),order: 2)
-			def sellOfFertilizer = new Activity(names:j(["en":"Sell Of Fertilizer","fr":"Vente d'engrais"]), descriptions:j([:]),order: 4)
-			def sellOfGardenCrops = new Activity(names:j(["en":"Sell Of Garden Crops","fr":"Vente de collecte de jardin"]), descriptions:j([:]),order: 5)
-			def carpentry = new Activity(names:j(["en":"Carpentry","fr":"Menuiserie"]), descriptions:j([:]),order: 6)
+			def liveStock = newActivity(j(["en":"Live Stock","fr":"B�tail"]),j([:]),1)
+			def agriculture = newActivity(j(["en":"Agriculture","fr":"Agriculture fr"]),j([:]),3)
+			def eggPoultryfarm = newActivity(j(["en":"Egg Poultry Farm","fr":"Ferme avicole d'oeufs"]),j([:]),2)
+			def sellOfFertilizer = newActivity(j(["en":"Sell Of Fertilizer","fr":"Vente d'engrais"]),j([:]),4)
+			def sellOfGardenCrops = newActivity(j(["en":"Sell Of Garden Crops","fr":"Vente de collecte de jardin"]),j([:]),5)
+			def carpentry = newActivity(j(["en":"Carpentry","fr":"Menuiserie"]),j([:]),6)
+
+					
+			def kivuyeCoop = newCooperative("Kivuye HC Cooperative", "Kivuye HC Cooperative","Kivuye HC Cooperative Desc.",kivuyeHC,"KivuyeHC-01",districtLevel,78,45,getDate(2006,9,29)) 				
 			
-			liveStock.save(failOnError: true, flush:true)
-			agriculture.save(failOnError: true, flush:true)
-			eggPoultryfarm.save(failOnError: true, flush:true)
-			sellOfFertilizer.save(failOnError: true, flush:true)
-			sellOfGardenCrops.save(failOnError: true, flush:true)
-			carpentry.save(failOnError: true, flush:true)
+			def kivuyePbf1 = newPbf(j(["en":"Kivuye Score 1","fr":"Kivuye Score 1 fr"]),j([:]),getDate(2011,1,1),getDate(2011,3,31),typeTB,205000L,204000L,202000L,kivuyeCoop,1);
+			def kivuyePbf2 = newPbf(j(["en":"Kivuye Score 2","fr":"Kivuye Score 2 fr"]),j([:]),getDate(2010,10,1),getDate(2010,12,31),typeVIH,,106000L,104000L,102000L,kivuyeCoop,2);
 			
+			def kivuyeShare1 = newShare(j(["en":"Kivuye Share 1","fr":"Kivuye Share 1 fr"]),j([:]),getDate(2011,1,1),20000,kivuyeCoop,true,2);
+			def kivuyeShare2 = newShare(j(["en":"Kivuye Share 2","fr":"Kivuye Share 2 fr"]),j([:]),getDate(2010,10,1),21000,kivuyeCoop,false,1);
 			
-			//Cooparative scores
-			def kivuyeScore1 = new PbfScore(names:j(["en":"Kivuye Score 1","fr":"Kivuye Score 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:67,amountHCtoCoop:204000);
-			def kivuyeScore2 = new PbfScore(names:j(["en":"Kivuye Score 2","fr":"Kivuye Score 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:70,amountHCtoCoop:104000);
-			def kivuyeShare1 = new Share(names:j(["en":"Kivuye Share 1","fr":"Kivuye Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:20000);
-			def kivuyeShare2 = new Share(names:j(["en":"Kivuye Share 2","fr":"Kivuye Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:21000);
+			def kivuyeTraining1 = newTraining(j(["en":"Gitare Training 1","fr":"Gitaree Share 1 fr"]),getDate(2009,4,21),now(),kivuyeCoop,"Gitare","CHAI");
+			def kivuyeTraining2 = newTraining(j(["en":"Gitare Training 2","fr":"Gitare Share 2 fr"]),getDate(2010,10,1),now(),kivuyeCoop,"Burera hospital","MoH");
 			
-			def kivuyeCoop = new Cooperative(
-				name:"Kivuye HC Cooperative", 
-				description:"Kivuye HC Cooperative Desc.",
-				organisationUnit: kivuyeHC,
-				registrationNumber: "KivuyeHC-01",
-				createDate:getDate(2006,9,29)
-				) 
+			def kivuyeSupervision1 = newSupervision(j(["en":"Gitare Training 1","fr":"Gitaree Share 1 fr"]),now(),kivuyeCoop,"Gitare","Jean Pierre","CHAI");
+			def kivuyeSupervision2 = newSupervision(j(["en":"Gitare Training 2","fr":"Gitare Share 2 fr"]),getDate(2010,10,1),kivuyeCoop,"Burera hospital","Patric UWIMANA","MoH");
 			
 			//add activity
 			kivuyeCoop.addActivity(liveStock);
@@ -240,28 +234,29 @@ class Initializer {
 			//add level
 			nationalLevel.addCooperative(kivuyeCoop);
 			//add score
-			kivuyeCoop.addScore(kivuyeScore1)
-			kivuyeCoop.addScore(kivuyeScore2)
+			kivuyeCoop.addScore(kivuyePbf1)
+			kivuyeCoop.addScore(kivuyePbf2)
 			//add share
 			kivuyeCoop.addShare(kivuyeShare1)
 			kivuyeCoop.addShare(kivuyeShare2)
 			
+			kivuyeCoop.addTraining(kivuyeTraining1)
+			kivuyeCoop.addTraining(kivuyeTraining2)
+			
+			kivuyeCoop.addSupervision(kivuyeSupervision1)
+			kivuyeCoop.addSupervision(kivuyeSupervision2)
+			
 			kivuyeCoop.save(failOnError: true, flush:true)
-			
-			
-			def gitareScore1 = new PbfScore(names:j(["en":"Gitare Score 1","fr":"Gitare Score 1 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),score:62,amountHCtoCoop:176000);
-			def gitareScore2 = new PbfScore(names:j(["en":"Gitare Score 2","fr":"Gitare Score 2 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),score:80,amountHCtoCoop:221000);
-			def gitareShare1 = new Share(names:j(["en":"Gitare Share 1","fr":"Gitaree Share 1 fr"]), descriptions:j([:]),order: 2,startDate:getDate(2011,1,1),endDate:getDate(2011,3,31),share:22000);
-			def gitareShare2 = new Share(names:j(["en":"Gitare Share 2","fr":"Gitare Share 2 fr"]), descriptions:j([:]),order: 1,startDate:getDate(2010,10,1),endDate:getDate(2010,12,31),share:24000);
 			 
-			 def gitareCoop = new Cooperative(
-				 name:"Gitare HC Cooperative",
-				 description:"Gitare HC Cooperative Desc.",
-				 organisationUnit: gitareHC,
-				 registrationNumber: "GitareHC-01",
-				 createDate:getDate(2007,9,29)
-				 )
+			 def gitareCoop = newCooperative("Gitare HC Cooperative","Gitare HC Cooperative","Gitare HC Cooperative Desc.",gitareHC,"GitareHC-01",sectorLevel,44,34,getDate(2007,9,29))
 			 
+			 def gitarePbf1 = newPbf(j(["en":"Gitare Score 1","fr":"Gitare Score 1 fr"]),j([:]),getDate(2011,1,1),getDate(2011,3,31),typeTB,176000L,176000L,175000L,gitareCoop,1);
+			 def gitarePbf2 = newPbf(j(["en":"Gitare Score 2","fr":"Gitare Score 2 fr"]),j([:]),getDate(2010,10,1),getDate(2010,12,31),typeVIH,221000L,220000L,211000L,gitareCoop,3);
+			 def gitareShare1 = newShare(j(["en":"Gitare Share 1","fr":"Gitaree Share 1 fr"]),j([:]),getDate(2011,3,31),22000,gitareCoop,false,2);
+			 def gitareShare2 = newShare(j(["en":"Gitare Share 2","fr":"Gitare Share 2 fr"]),j([:]),getDate(2010,10,1),24000,gitareCoop,true,1);
+			 def gitareTraining1 = newTraining(j(["en":"Gitare Training 1","fr":"Gitaree Share 1 fr"]),getDate(2011,3,31),now(),gitareCoop,"gitare","CHAI");
+			 def gitareTraining2 = newTraining(j(["en":"Gitare Training 2","fr":"Gitare Share 2 fr"]),getDate(2010,10,1),now(),gitareCoop,"burera hospital","MoH");
+			 			 
 			 //add activity
 			 gitareCoop.addActivity(liveStock);
 			 gitareCoop.addActivity(sellOfFertilizer);
@@ -269,99 +264,65 @@ class Initializer {
 			 //add level
 			 sectorLevel.addCooperative(gitareCoop);
 			 //add score
-			 gitareCoop.addScore(gitareScore1)
-			 gitareCoop.addScore(gitareScore2)
-			 //add share
+			 gitareCoop.addScore(gitarePbf1)
+			 gitareCoop.addScore(gitarePbf2)
+			 //add share	
 			 gitareCoop.addShare(gitareShare1)
 			 gitareCoop.addShare(gitareShare2)
+			 gitareCoop.addTraining(gitareTraining1)
+			 gitareCoop.addTraining(gitareTraining2)
 			 
 			 gitareCoop.save(failOnError: true, flush:true)
 			 
 			 			 
-			 def member1 = new Member(
-				 familyName:"Kahigiso",
-				 otherNames:"Muchika Jean",
-				 phoneNumber:"0788303174",
-				 email:"jkahigiso@clinton.org",
-				 idNumber:872837,
-				 joinDate:getDate(2002,9,3),
-				 dob:getDate(1980,2,3),
-				 gender:Gender.MALE
-				 );
-			 
+			 def member1 = newMember(true,"Kahigiso","Muchika Jean","0788303174","jkahigiso@clinton.org",872837L,gitareCoop,getDate(2002,9,3),null,binome,getDate(1980,2,3),Gender.MALE);
 			 gitareCoop.addMember(member1);
 			 binome.addMember(member1);
 			 gitareCoop.save(failOnError: true, flush:true)
 			 binome.save(failOnError: true, flush:true)
 			 
-			 def member2 = new Member(
-				 familyName:"Lister",
-				 otherNames:"Susan",
-				 phoneNumber:"0788304474",
-				 email:"slister@clinton.org",
-				 idNumber:872832,
-				 joinDate:getDate(2000,9,3),
-				 dob:getDate(1988,10,3),
-				 gender:Gender.FEMALE
-				 );
-			 
+			 def member2 = newMember(true,"Lister","Susan","0788304474","slister@clinton.org",872832L,gitareCoop,getDate(2000,9,3),null,asm,getDate(1988,10,3),Gender.FEMALE);
 			 gitareCoop.addMember(member2);
 			 asm.addMember(member2);
 			 gitareCoop.save(failOnError: true, flush:true)
 			 asm.save(failOnError: true, flush:true)
 			 
 			 
-			 def member3 = new Member(
-				 familyName:"Mugeni",
-				 otherNames:"Dusabeysu Soline",
-				 phoneNumber:"0788304484",
-				 email:"smugeni@clinton.org",
-				 idNumber:8728345,
-				 joinDate:getDate(2007,9,3),
-				 dob:getDate(1986,10,3),
-				 gender:Gender.FEMALE
-				 );
-			 
-			 gitareCoop.addMember(member3);
+			 def member3 = newMember(true,"Mugeni","Dusabeysu Soline","0788304484","smugeni@clinton.org",8728345L,kivuyeCoop,getDate(2007,9,3),null,asm,getDate(1986,10,3),Gender.FEMALE);
+			 kivuyeCoop.addMember(member3);
 			 asm.addMember(member3);
-			 gitareCoop.save(failOnError: true, flush:true)
-			 binome.save(failOnError: true, flush:true)
+			 kivuyeCoop.save(failOnError: true, flush:true)
+			 asm.save(failOnError: true, flush:true)
+			 
+			 
 			 
 			 //Costing Type
-			 def sales = new CostingType(names:j(["en":"Sales","fr":"Ventes"]), descriptions:j(["en":"Sales","fr":"Ventes"]),order: 1,code:"sales");
-			 def totalCost = new CostingType(names:j(["en":"Total Cost","fr":"Cout Total"]), descriptions:j(["en":"Total Cost","fr":"Cout Total"]),order: 3,code:"totalCost");
-			 def dividend = new CostingType(names:j(["en":"Dividend","fr":"Dividend"]), descriptions:j(["en":"Dividend","fr":"Dividend"]),order: 2,code:"dividend");
-			 def totalAsset = new CostingType(names:j(["en":"Total Asset","fr":"Total Asset"]), descriptions:j(["en":"Total Asset","fr":"Total Asset"]),order: 5,code:"totalAsset");
-			 def invenstment = new CostingType(names:j(["en":"Invenstment","fr":"Invenstment"]), descriptions:j(["en":"Invenstment","fr":"Invenstment"]),order: 4,code:"invenstment");
+			 def sales = newCostingType(j(["en":"Sales","fr":"Ventes"]),j(["en":"Sales","fr":"Ventes"]),1,"sales");
+			 def totalCost = newCostingType(j(["en":"Total Cost","fr":"Cout Total"]),j(["en":"Total Cost","fr":"Cout Total"]),3,"totalCost");
+			 def dividend = newCostingType(j(["en":"Dividend","fr":"Dividend"]),j(["en":"Dividend","fr":"Dividend"]),2,"dividend");
+			 def totalAsset = newCostingType(j(["en":"Total Asset","fr":"Total Asset"]),j(["en":"Total Asset","fr":"Total Asset"]),5,"totalAsset");
+			 def invenstment = newCostingType(j(["en":"Invenstment","fr":"Invenstment"]),j(["en":"Invenstment","fr":"Invenstment"]),4,"invenstment");
 			 
-			 sales.save(failOnError: true, flush:true)
-			 totalCost.save(failOnError: true, flush:true)
-			 dividend.save(failOnError: true, flush:true)
-			 totalAsset.save(failOnError: true, flush:true)
-			 invenstment.save(failOnError: true, flush:true)
-			 
-			
-			
 			//Transaction Category Type
-			def expense = new CategoryType(names:j(["en":"Expense","fr":"Depense"]), descriptions:j([:]),order: 2,code:"expense");
-			def income = new CategoryType(names:j(["en":"Income","fr":"Revenu"]), descriptions:j([:]),order: 1,code:"income");
-			def bankTransaction = new CategoryType(names:j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]), descriptions:j([:]),order: 1,code:"bankTransaction");
+			def expense = newCategoryType(j(["en":"Expense","fr":"Depense"]),j([:]),2,"expense");
+			def income = newCategoryType(j(["en":"Income","fr":"Revenu"]),j([:]), 1,"income");
+			def bankTransaction = newCategoryType(j(["en":"Bank Transaction","fr":"Transaction de Banquaire"]),j([:]),1,"bankTransaction");
 			
 			//Transaction Category
 			
 			//Expenses
-			def accountPayable = new Category(names:j(["en":"Account Payable","fr":"Account Payable fr"]), descriptions:j([:]),type: expense,order: 3);
-			def feedChicken = new Category(names:j(["en":"Feed Chicken","fr":"Feed Chicken fr"]), descriptions:j([:]),type: expense,order: 1);
-			def feedLivestock = new Category(names:j(["en":"Feed LiveStock","fr":"Feed LiveStockn fr"]), descriptions:j([:]),type: expense,order: 2);
+			def accountPayable = newCategory(j(["en":"Account Payable","fr":"Account Payable fr"]),j([:]),expense,3);
+			def feedChicken = newCategory(j(["en":"Feed Chicken","fr":"Feed Chicken fr"]),j([:]),expense,1);
+			def feedLivestock = newCategory(j(["en":"Feed LiveStock","fr":"Feed LiveStockn fr"]),j([:]),expense,2);
 			
 			//Incomes
-			def communityPbf = new Category(names:j(["en":"Community Pbf","fr":"Community Pbf fr"]), descriptions:j([:]),type: income,order: 3);
-			def salesPrimary = new Category(names:j(["en":"Sales Primary","fr":"Sales Primary fr"]), descriptions:j([:]),type: income,order: 1);
-			def salesSecondary = new Category(names:j(["en":"Sales Secondary","fr":"Sales Secondary fr"]), descriptions:j([:]),type: income,order: 2);
+			def communityPbf = newCategory(j(["en":"Community Pbf","fr":"Community Pbf fr"]),j([:]),income,3);
+			def salesPrimary = newCategory(j(["en":"Sales Primary","fr":"Sales Primary fr"]),j([:]),income,1);
+			def salesSecondary = newCategory(j(["en":"Sales Secondary","fr":"Sales Secondary fr"]),j([:]),income,2);
 			
 			//Bank Transactions
-			def bankTransfer = new Category(names:j(["en":"Bank Transfer","fr":"Bank Transferf fr"]), descriptions:j([:]),type: income,order: 3);
-			def bankWithdraw = new Category(names:j(["en":"Bank Withdraw","fr":"Bank Withdraw fr"]), descriptions:j([:]),type: income,order: 1);
+			def bankTransfer = newCategory(j(["en":"Bank Transfer","fr":"Bank Transferf fr"]),j([:]),income,3);
+			def bankWithdraw = newCategory(j(["en":"Bank Withdraw","fr":"Bank Withdraw fr"]),j([:]),income,1);
 			
 			
 			expense.addCategory(accountPayable)
@@ -378,37 +339,80 @@ class Initializer {
 			bankTransaction.addCategory(bankWithdraw)
 			bankTransaction.save(failOnError: true, flush:true)
 			
-		 	
-			def admin = User.findByUsername("admin");
-			def burera = User.findByUsername("burera");
 			
 			//Transactions
-			def transaction1 = new Transaction(
-				cooperative: kivuyeCoop,
-				category: accountPayable,
-				enteredBy: admin.id,
-				transactionDate: getDate(2011,3,9),
-				recordedDate: getDate(2011,4,17),
-				description: "Transaction 1",
-				amount: 23000
-				);
-			transaction1.save(failOnError: true, flush:true)
-			
-			def transaction2 = new Transaction(
-				cooperative: kivuyeCoop,
-				category: accountPayable,
-				enteredBy: burera.id,
-				transactionDate: getDate(2011,3,10),
-				recordedDate: getDate(2011,4,27),
-				description: "Transaction 2",
-				amount: 2000
-				);
-			transaction2.save(failOnError: true, flush:true)
+			def transaction1 = newTransaction(kivuyeCoop,accountPayable,User.findByUsername("admin").id,getDate(2011,3,9),now(),"Transaction 1",23000L);
+			def transaction2 = newTransaction(kivuyeCoop,accountPayable,User.findByUsername("burera").id,getDate(2011,3,10),now(),"Transaction 2",2000L);
 			
 			
 
 		}
 		
+	}
+	
+	public static def newTransaction(def cooperative,def category,def enteredBy,def transactionDate,def recordedDate,def description,def amount){
+		return new Transaction(cooperative:cooperative,category:category,enteredBy:enteredBy,transactionDate:transactionDate,recordedDate:recordedDate,description:description,amount:amount).save(failOnError: true, flush:true);
+	}
+	public static def newCategoryType(def names,def descriptions,def order,def code){
+		return new CategoryType(names:names,descriptions:descriptions,code:code,order:order).save(failOnError: true, flush:true);
+	}
+	public static def newCategory(def names,def descriptions,def type,def order){
+		return new Category(names:names,descriptions:descriptions,type:type,order:order).save(failOnError: true, flush:true);
+	}
+	public static def newCostingType(def names,def descriptions,def order,def code){
+		return new CostingType(names:names,descriptions:descriptions,code:code,order:order).save(failOnError: true, flush:true);
+	}
+	public static def newMember(def active,def familyName,def otherNames,def phoneNumber, def email, def idNumber,def cooperative,def joinDate, def leftDate, def category, def dob, def gender){
+		return new Member(active:active,familyName:familyName,otherNames:otherNames,phoneNumber:phoneNumber,email:email,idNumber:idNumber,cooperative:cooperative,joinDate:joinDate,leftDate:leftDate,category:category,dob:dob,gender:gender)
+	}
+	public static def newActivity(def names,def descriptions,def order){
+		return new Activity(names:names,descriptions:descriptions,order:order).save(failOnError: true, flush:true);
+	}
+	public static def newShare(def names,def descriptions,def year,def share,def cooperative,def current,def order){
+		return new Share(names:names,descriptions:descriptions,year:year,share:share,cooperative:cooperative,current:current).save(failOnError: true, flush:true)
+	}
+	public static def newSupervision(def descriptions,def date,def cooperative,def location,def supervisor,def source){
+		return new Supervision(descriptions:descriptions,date:date,cooperative:cooperative,location:location,supervisor:supervisor,source:source).save(failOnError: true, flush:true)
+	}
+	public static def newTraining(def descriptions,def startDate,def endDate,def cooperative,def location,def provider){
+		return new Training(descriptions:descriptions,startDate:startDate,endDate:endDate,cooperative:cooperative,location:location,provider:provider).save(failOnError: true, flush:true)
+	}
+	public static def newPbfType(def names,def descriptions,def order){
+		return new PbfType(names:names,descriptions:descriptions,order:order).save(failOnError: true, flush:true)
+	}
+	public static def newPbf(def names,def descriptions,def startDate,def endDate,def type,def amoutMohToHC,def amountSousCompte,def amountHCtoCoop,def cooperative,def order){
+		return new Pbf(names:names,descriptions:descriptions,startDate:startDate,endDate:endDate,type:type,amountSousCompte:amountSousCompte,amoutMohToHC:amoutMohToHC,amountHCtoCoop:amountHCtoCoop,cooperative:cooperative).save(failOnError: true, flush:true)
+	}
+	
+	public static def newRegistrationLevel(def names,def descriptions,def order){
+		return new RegistrationLevel(names:names,descriptions:descriptions,order:order).save(failOnError: true, flush:true);
+	}
+	
+	public static def newCooperative(def commercialName,def serviceName,def description,def organisationUnit,def registrationNumber,def registrationLevel,def numberOfVillages,def numberOfCells,def createDate){
+		return new Cooperative(commercialName:commercialName,serviceName:serviceName,description:description,organisationUnit:organisationUnit,registrationNumber:registrationNumber,registrationLevel:registrationLevel,numberOfVillages:numberOfVillages,numberOfCells:numberOfCells,createDate:createDate).save(failOnError: true, flush:true)
+	}
+	
+	public static def newMemberCategory(def names,def descriptions,def order){
+		return new MemberCategory(names:names,descriptions:descriptions,order:order).save(failOnError: true, flush:true);
+	}
+	
+	public static def now(){
+		return new Date()
+	}
+	
+	public static Date getDate( int year, int month, int day ) {
+		final Calendar calendar = Calendar.getInstance();
+
+		calendar.clear();
+		calendar.set( Calendar.YEAR, year );
+		calendar.set( Calendar.MONTH, month - 1 );
+		calendar.set( Calendar.DAY_OF_MONTH, day );
+
+		return calendar.getTime();
+	}
+
+	public static Translation j(def map) {
+		return new Translation(jsonText: JSONUtils.getJSONFromMap(map));
 	}
 		
 	static def createRole(){
@@ -441,7 +445,7 @@ class Initializer {
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("memberCategory:*").permission)
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("category:*").permission)
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("categoryType:*").permission)
-			amohAdmin.addToPermissions(PermissionHelper.findByPermission("pbfScore:*").permission)	
+			amohAdmin.addToPermissions(PermissionHelper.findByPermission("pbf:*").permission)	
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("share:*").permission)
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("member:*").permission)
 			amohAdmin.addToPermissions(PermissionHelper.findByPermission("supervision:*").permission)
@@ -461,7 +465,7 @@ class Initializer {
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("menu:changePassword").permission)
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("transaction:list").permission)
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("share:list").permission)
-			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("pbfScore:list").permission)
+			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("pbf:list").permission)
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("activity:list").permission)
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("member:list").permission)
 			mohSupervisor.addToPermissions(PermissionHelper.findByPermission("supervision:list").permission)
@@ -483,7 +487,7 @@ class Initializer {
 			district.addToPermissions(PermissionHelper.findByPermission("transaction:*").permission)
 			district.addToPermissions(PermissionHelper.findByPermission("category:getAjaxData").permission)
 			district.addToPermissions(PermissionHelper.findByPermission("share:*").permission)
-			district.addToPermissions(PermissionHelper.findByPermission("pbfScore:*").permission)
+			district.addToPermissions(PermissionHelper.findByPermission("pbf:*").permission)
 			district.addToPermissions(PermissionHelper.findByPermission("activity:list").permission)
 			district.addToPermissions(PermissionHelper.findByPermission("member:*").permission)
 			district.addToPermissions(PermissionHelper.findByPermission("supervision:*").permission)
@@ -510,10 +514,10 @@ class Initializer {
 			clerc.addToPermissions(PermissionHelper.findByPermission("category:getAjaxData").permission)
 			clerc.addToPermissions(PermissionHelper.findByPermission("report:report").permission)
 			clerc.addToPermissions(PermissionHelper.findByPermission("report:download").permission)
-			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:list").permission)
-			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:create").permission)
-			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:save").permission)
-			clerc.addToPermissions(PermissionHelper.findByPermission("pbfScore:edit").permission)	
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbf:list").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbf:create").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbf:save").permission)
+			clerc.addToPermissions(PermissionHelper.findByPermission("pbf:edit").permission)	
 			clerc.addToPermissions(PermissionHelper.findByPermission("share:list").permission)
 			clerc.addToPermissions(PermissionHelper.findByPermission("share:create").permission)
 			clerc.addToPermissions(PermissionHelper.findByPermission("share:save").permission)
@@ -566,7 +570,7 @@ class Initializer {
 		controllerList.add("transaction")
 		controllerList.add("costingType")
 		controllerList.add("registrationLevel")
-		controllerList.add("pbfScore")
+		controllerList.add("pbf")
 		controllerList.add("share")
 		controllerList.add("activity")
 		controllerList.add("memberCategory")
@@ -600,20 +604,5 @@ class Initializer {
 		if(!PermissionHelper.findByPermission("category:getAjaxData")) new PermissionHelper(permission:"category:getAjaxData").save(failOnError: true, flush:true)
 		
 		
-	}
-
-	public static Date getDate( int year, int month, int day ) {
-		final Calendar calendar = Calendar.getInstance();
-
-		calendar.clear();
-		calendar.set( Calendar.YEAR, year );
-		calendar.set( Calendar.MONTH, month - 1 );
-		calendar.set( Calendar.DAY_OF_MONTH, day );
-
-		return calendar.getTime();
-	}
-
-	public static Translation j(def map) {
-		return new Translation(jsonText: JSONUtils.getJSONFromMap(map));
 	}
 }

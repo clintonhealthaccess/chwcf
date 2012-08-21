@@ -87,6 +87,9 @@
 		            	<shiro:hasPermission permission="menu:registrationLevel">
 		            		<li><a href="${createLink(controller: 'registrationLevel', action: 'list')}"><g:message code="header.menu.sub.registration.level.label" default="Registration Level"/></a></li>
 		            	</shiro:hasPermission>
+		            	<shiro:hasPermission permission="menu:pbfType">
+		            		<li><a href="${createLink(controller: 'pbfType', action: 'list')}"><g:message code="header.menu.sub.pbf.type.level.label" default="Pbf Type"/></a></li>
+		            	</shiro:hasPermission>
 		            	<shiro:hasPermission permission="menu:user">
 		            		<li><a href="${createLink(controller: 'user', action: 'list')}"><g:message code="header.menu.sub.user.label" default="User"/></a></li>
 		            	</shiro:hasPermission>

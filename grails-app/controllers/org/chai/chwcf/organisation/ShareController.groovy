@@ -61,22 +61,22 @@ class ShareController  extends AbstractEntityController {
 		return "admin.organisation.share.label"
 	}
 	def bindParams(def entity) {
-		bindData(entity,params,[exclude:['startDate','endDate']])
+		bindData(entity,params,[exclude:['current']])
 		
 		//FIXME If you find better solution to do this please feel free to fix
-		if(params.startDate!='' && params.startDate!=null){
-			entity.startDate=Utils.parseDate(params.startDate);
-		}else
-			entity.startDate=null;
-			
-		if(params.endDate!='' && params.endDate!=null){
-			entity.endDate=Utils.parseDate(params.endDate);
-		}else
-			entity.endDate=null;
+		if(params.current!="" && params.current=="on"){
+			def share = Share.findByCurrent(true)
+			if(share){ 
+				share.current = false
+				share.save(failOnError:true)
+			}
+			entity.current=params.current
+		}
 		
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
-		if (params.names!=null) entity.names = params.names
+		if (params.descriptions!=null) entity.descriptions = params.descriptions
+		entity.names =["en":""]
 	}
 	
 	def list = {

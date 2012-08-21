@@ -27,74 +27,121 @@
  */
 package org.chai.chwcf.organisation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.chai.chwcf.Translatable;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Jean Kahigiso M.
- * 
+ *
  */
 @SuppressWarnings("serial")
-@Entity(name = "RegistrationLevel")
-@Table(name = "chwcf_registration_level")
-public class RegistrationLevel extends Translatable {
-
+@Entity(name="Pbf")
+@Table(name="chwcf_pbf")
+public class Pbf extends Translatable {
+	
 	private Long id;
+	private Date startDate;
+	private Date endDate;
+	private PbfType type;
+	private Long amoutMohToHC;
+	private Long amountSousCompte;	
+	private Long amountHCtoCoop;
+	private Cooperative cooperative;
 	private Integer order;
-	private List<Cooperative> cooperatives = new ArrayList<Cooperative>();
-
+	
 	@Id
 	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
-
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
 	
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	@Basic(optional = false)
+	@Temporal(TemporalType.DATE)
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	@ManyToOne(targetEntity = PbfType.class, optional = false)
+	@JoinColumn(nullable = false)
+	public PbfType getType() {
+		return type;
+	}
+	public void setType(PbfType type) {
+		this.type = type;
+	}
+	public Long getAmountSousCompte() {
+		return amountSousCompte;
+	}
+	public void setAmountSousCompte(Long amountSousCompte) {
+		this.amountSousCompte = amountSousCompte;
+	}
+	public Long getAmoutMohToHC() {
+		return amoutMohToHC;
+	}
+	public void setAmoutMohToHC(Long amoutMohToHC) {
+		this.amoutMohToHC = amoutMohToHC;
+	}
+	
+	public void setAmountHCtoCoop(Long amountHCtoCoop) {
+		this.amountHCtoCoop = amountHCtoCoop;
+	}
+	public Long getAmountHCtoCoop() {
+		return amountHCtoCoop;
+	}
+	@ManyToOne(targetEntity = Cooperative.class, optional = false)
+	@JoinColumn(nullable = false)
+	public Cooperative getCooperative() {
+		return cooperative;
+	}
+	
+	public void setCooperative(Cooperative cooperative) {
+		this.cooperative = cooperative;
+	}
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
 		return order;
 	}
-
 	public void setOrder(Integer order) {
 		this.order = order;
 	}
-
-	@OneToMany(targetEntity = Cooperative.class, mappedBy = "registrationLevel")
-	@Cascade({CascadeType.MERGE})
-	public List<Cooperative> getCooperatives() {
-		return cooperatives;
-	}
-
-	public void setCooperatives(List<Cooperative> cooperatives) {
-		this.cooperatives = cooperatives;
-	}
-	
-	
-    @Override
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -103,7 +150,7 @@ public class RegistrationLevel extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RegistrationLevel other = (RegistrationLevel) obj;
+		Pbf other = (Pbf) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -112,17 +159,10 @@ public class RegistrationLevel extends Translatable {
 		return true;
 	}
 	
-	
-
 	@Override
 	public String toString() {
-		return "RegistrationLevel [id=" + id + ", names=" + names + "]";
+		return "CooperativePbf [id=" + id + ", startDate=" + startDate
+				+ ", endDate=" + endDate + "]";
 	}
-
-	@Transient
-	public void addCooperative(Cooperative cooperative) {
-		cooperative.setRegistrationLevel(this);
-		cooperatives.add(cooperative);
-	}
-
+	
 }

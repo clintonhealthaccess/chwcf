@@ -27,106 +27,74 @@
  */
 package org.chai.chwcf.organisation;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.chai.chwcf.Translatable;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Jean Kahigiso M.
- *
+ * 
  */
 @SuppressWarnings("serial")
-@Entity(name="PbfScore")
-@Table(name="chwcf_pbf_score")
-public class PbfScore extends Translatable {
-	
+@Entity(name = "PbfType")
+@Table(name = "chwcf_pbf_type")
+public class PbfType extends Translatable {
+
 	private Long id;
 	private Integer order;
-	private Date startDate;
-	private Date endDate;
-	private Integer score;
-	private Integer amountHCtoCoop;
-	private Cooperative cooperative;
-	
+	private List<Pbf> pbfs = new ArrayList<Pbf>();
+
 	@Id
 	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
 		return order;
 	}
+
 	public void setOrder(Integer order) {
 		this.order = order;
 	}
-	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getStartDate() {
-		return startDate;
+
+	@OneToMany(targetEntity = Pbf.class, mappedBy = "type")
+	@Cascade({CascadeType.MERGE})
+	public List<Pbf> getPbfs() {
+		return pbfs;
+	}
+
+	public void setPbfs(List<Pbf> pbfs) {
+		this.pbfs = pbfs;
 	}
 	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
 	
-	@Basic(optional = false)
-	@Temporal(TemporalType.DATE)
-	public Date getEndDate() {
-		return endDate;
-	}
-	
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-	
-	public void setScore(Integer score) {
-		this.score = score;
-	}
-	public Integer getScore() {
-		return score;
-	}
-	public void setAmountHCtoCoop(Integer amountHCtoCoop) {
-		this.amountHCtoCoop = amountHCtoCoop;
-	}
-	public Integer getAmountHCtoCoop() {
-		return amountHCtoCoop;
-	}
-	@ManyToOne(targetEntity = Cooperative.class, optional = false)
-	@JoinColumn(nullable = false)
-	public Cooperative getCooperative() {
-		return cooperative;
-	}
-	
-	public void setCooperative(Cooperative cooperative) {
-		this.cooperative = cooperative;
-	}
-	
-	@Override
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -135,7 +103,7 @@ public class PbfScore extends Translatable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PbfScore other = (PbfScore) obj;
+		PbfType other = (PbfType) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -144,10 +112,16 @@ public class PbfScore extends Translatable {
 		return true;
 	}
 	
+	
+
 	@Override
 	public String toString() {
-		return "CooperativePbfScore [id=" + id + ", startDate=" + startDate
-				+ ", endDate=" + endDate + "]";
+		return "PbfType [id=" + id + ", names=" + names + "]";
 	}
-	
+
+	@Transient
+	public void addPbf(Pbf pbf) {
+		pbfs.add(pbf);
+	}
+
 }

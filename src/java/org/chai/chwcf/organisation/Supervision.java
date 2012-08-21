@@ -57,6 +57,7 @@ public class Supervision extends Translatable{
 	private Cooperative cooperative;
 	private String location;
 	private String supervisor;
+	private String source;
 	
 	@Id
 	@GeneratedValue
@@ -104,7 +105,14 @@ public class Supervision extends Translatable{
 	public void setSupervisor(String supervisor) {
 		this.supervisor = supervisor;
 	}
-	
+	@Basic(optional = false)
+	@Column(name = "supervisor_provenance")
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

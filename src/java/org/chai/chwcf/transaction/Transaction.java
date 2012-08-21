@@ -61,7 +61,7 @@ public class Transaction implements Serializable {
 	private Date transactionDate;
 	private Date recordedDate;
 	private String description;
-	private Integer amount;
+	private Long amount;
 	private boolean approval = false;
 	private Date approvalDate;
 
@@ -139,11 +139,11 @@ public class Transaction implements Serializable {
 		return description;
 	}
     @Column(nullable=false)
-	public Integer getAmount() {
+	public Long getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Integer amount) {
+	public void setAmount(Long amount) {
 		this.amount = amount;
 	}
 

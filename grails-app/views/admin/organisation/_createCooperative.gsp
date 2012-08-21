@@ -22,7 +22,8 @@
 		</div>
 	</div>
 	<g:inputDate name="createDate" bean="${cooperative}" value="${Utils.formatDate(cooperative?.createDate)}" label="Created on" field="createDate" />
-    <g:input name="name" label="Name" bean="${cooperative}" value="${cooperative.name}" field="name"/>
+    <g:input name="serviceName" label="Service Name" bean="${cooperative}" value="${cooperative.serviceName}" field="serviceName"/>
+    <g:input name="commercialName" label="Commercial Name" bean="${cooperative}" value="${cooperative.commercialName}" field="commercialName"/>
     <g:textarea name="description" bean="${cooperative}" rows="10" value="${cooperative?.description}" label="Description" field="description" />
 	
 	<div class="row ${hasErrors(bean:cooperative, field:'registrationLevel', 'errors')}">

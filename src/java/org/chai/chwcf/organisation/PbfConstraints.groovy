@@ -31,10 +31,15 @@ package org.chai.chwcf.organisation
  * @author Jean Kahigiso M.
  *
  */
-constraints={
+constraints = {
+	
+	type(nullable:false)
 	cooperative(nullable: false, blank: false)
-	location(nullable: false, blank: false)
-	supervisor(nullable: false, blank: false)
-	date(nullable: false, blank: false,validator:{it <= new Date()})
-	source(nullable: false)
+	amoutMohToHC (nullable: false)
+	amountSousCompte (nullable: true,validator:{ val, obj -> return (val!=null)? (val<=obj.amoutMohToHC):false})
+	amountHCtoCoop (nullable: true,validator:{ val, obj -> return (val!=null)? (val<=obj.amountSousCompte):false})
+	startDate(nullable: false, blank: false,validator:{it <= new Date()})
+	endDate(nullable: false, blank: false, validator: { val, obj -> return val.after(obj.startDate)})
+	order(nullable:true)
+
 }

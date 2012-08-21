@@ -12,7 +12,8 @@
 		<mapping class="org.chai.chwcf.organisation.Cooperative" />
 		<mapping class="org.chai.chwcf.organisation.RegistrationLevel" />
 		<mapping class="org.chai.chwcf.organisation.Activity" />
-		<mapping class="org.chai.chwcf.organisation.PbfScore" />
+		<mapping class="org.chai.chwcf.organisation.Pbf" />
+		<mapping class="org.chai.chwcf.organisation.PbfType" />
 		<mapping class="org.chai.chwcf.organisation.Share" />
 		<mapping class="org.chai.chwcf.organisation.Training" />
 		<mapping class="org.chai.chwcf.organisation.Supervision" />

@@ -53,8 +53,7 @@ public class Share extends Translatable {
 
 	private Long id;
 	private Integer order;
-	private Date startDate;
-	private Date endDate;
+	private Date year;
 	private Integer share;
 	private Cooperative cooperative;
 	private boolean current=false;
@@ -69,36 +68,26 @@ public class Share extends Translatable {
 		this.id = id;
 	}
 
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
 	@Basic(optional = true)
 	@Column(name = "ordering")
 	public Integer getOrder() {
 		return order;
 	}
 
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
-	
 	@Basic(optional = false)
 	@Temporal(TemporalType.DATE)
-	public Date getStartDate() {
-		return startDate;
+	public Date getYear() {
+		return year;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setYear(Date year) {
+		this.year = year;
 	}
 	
-	@Basic(optional = true)
-	@Temporal(TemporalType.DATE)
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
 	public void setShare(Integer share) {
 		this.share = share;
 	}

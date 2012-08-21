@@ -131,7 +131,6 @@ public class CategoryType extends Translatable {
 	
 	@Transient
 	public void addCategory(Category category) {
-		category.setType(this);
 		categories.add(category);
 		Collections.sort(categories);
 

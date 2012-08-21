@@ -65,25 +65,16 @@ class MemberController extends AbstractEntityController {
 		return "admin.person.member.label"
 	}
 	def bindParams(def entity) {	
-		bindData(entity,params,[exclude:['joinDate','leftDate','dob']])
+		bindData(entity,params,[exclude:['leftDate','active']])
 		
 		//FIXME If you find better solution to do this please feel free to fix
-		
-		if(params.joinDate!='' && params.joinDate!=null){
-			entity.joinDate=Utils.parseDate(params.joinDate);
-		}else
-			entity.joinDate=null;
-			
-		if(params.leftDate!='' && params.leftDate!=null){
-			entity.leftDate=Utils.parseDate(params.leftDate);
-		}else
+		if(params.active!="" && params.active=="on"){	
 			entity.leftDate=null;
-			
-		if(params.dob!='' && params.dob!=null){
-			entity.dob=Utils.parseDate(params.dob);
-		}else
-			entity.dob=null;
-				
+			entity.active=true;
+		}else{ 
+			entity.leftDate=params.leftDate;
+			entity.active=false;
+		}		
 	}
 	
 	def list = {

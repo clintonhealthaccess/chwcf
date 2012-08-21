@@ -33,11 +33,8 @@ package org.chai.chwcf.organisation
  *
  */
 constraints = {
-	
 	cooperative(nullable: false)
+	order(nullable:true)
 	share(nullable: false, blank: false)
-	startDate(nullable: false,validator:{it <= new Date()})
-	endDate(nullable: true, validator: { val, obj -> return val?.after(obj.startDate)})
-	current(nullable: true, validator: { val, obj -> return (val==true)?(obj.endDate==null):true})
-
+	year(nullable: false,validator:{it <= new Date()})
 }

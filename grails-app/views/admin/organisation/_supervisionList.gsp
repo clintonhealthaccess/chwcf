@@ -3,9 +3,9 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th>Order</th>
 			<th>Date</th>
 			<th>Supervisor</th>
+			<th>From</th>
 			<th>Location</th>
 			<th>Descriptions</th>
 		</tr>
@@ -31,11 +31,11 @@
 						</shiro:hasPermission>
 					</ul>
 				</td>
-				<td>${supervision?.order}</td>
 				<td>${Utils.formatDate(supervision?.date)}</td>
 				<td>${supervision?.supervisor}</td>
+				<td>${supervision?.source}</td>
 				<td>${supervision?.location}</td>
-				<td><g:i18n field="${supervision.names}" /></td>
+				<td><g:i18n field="${supervision.descriptions}" /></td>
 			</tr>
 		</g:each>
 	</tbody>

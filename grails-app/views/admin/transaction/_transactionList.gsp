@@ -37,7 +37,7 @@
 						</shiro:hasPermission>
 					</ul>
 				</td>
-				<td>${transaction.cooperative.name}</td>
+				<td>${transaction.cooperative.serviceName}</td>
 				<td><g:i18n field="${transaction.category.names}" /></td>
 				<td>${Utils.formatDate(transaction?.transactionDate)}</td>
 				<td>${Utils.formatDate(transaction?.recordedDate)}</td>

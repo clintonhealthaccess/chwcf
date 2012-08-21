@@ -65,7 +65,8 @@ public class Cooperative implements Serializable {
 	private static final long serialVersionUID = 2480175919930656867L;
 
 	private Long id;
-	private String name;
+	private String commercialName;
+	private String serviceName;
 	private String description;
 	private OrganisationUnit organisationUnit;
 	private String registrationNumber;
@@ -77,7 +78,7 @@ public class Cooperative implements Serializable {
 	private List<Share> shares = new ArrayList<Share>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private List<Transaction> transactions = new ArrayList<Transaction>();
-	private List<PbfScore> scores = new ArrayList<PbfScore>();
+	private List<Pbf> scores = new ArrayList<Pbf>();
 	private List<Training> trainings = new ArrayList<Training>();
 	private List<Supervision> supervisions = new ArrayList<Supervision>();
 
@@ -90,14 +91,21 @@ public class Cooperative implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	@Basic(optional = false)
+	public String getCommercialName() {
+		return commercialName;
 	}
 
+	public void setCommercialName(String commercialName) {
+		this.commercialName = commercialName;
+	}
 	@Basic(optional = false)
-	public String getName() {
-		return name;
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	public void setDescription(String description) {
@@ -203,14 +211,14 @@ public class Cooperative implements Serializable {
 		return transactions;
 	}
 
-	public void setScores(List<PbfScore> scores) {
+	public void setScores(List<Pbf> scores) {
 		this.scores = scores;
 	}
 
-	@OneToMany(targetEntity = PbfScore.class, mappedBy = "cooperative")
+	@OneToMany(targetEntity = Pbf.class, mappedBy = "cooperative")
 	@Cascade({ CascadeType.ALL, CascadeType.DELETE })
 	@OrderBy(value = "order")
-	public List<PbfScore> getScores() {
+	public List<Pbf> getScores() {
 		return scores;
 	}
 
@@ -282,14 +290,11 @@ public class Cooperative implements Serializable {
 
 	@Transient
 	public void addMember(Member member) {
-		member.setCooperative(this);
 		members.add(member);
-
 	}
 
 	@Transient
-	public void addScore(PbfScore score) {
-		score.setCooperative(this);
+	public void addScore(Pbf score) {
 		scores.add(score);
 		Collections.sort(scores);
 
@@ -297,22 +302,18 @@ public class Cooperative implements Serializable {
 
 	@Transient
 	public void addShare(Share share) {
-		share.setCooperative(this);
 		shares.add(share);
 		Collections.sort(shares);
 	}
 
 	@Transient
 	public void addTraining(Training training) {
-		training.setCooperative(this);
 		trainings.add(training);
 		Collections.sort(trainings);
-
 	}
 
 	@Transient
 	public void addSupervision(Supervision supervision) {
-		supervision.setCooperative(this);
 		supervisions.add(supervision);
 		Collections.sort(supervisions);
 

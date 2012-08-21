@@ -87,7 +87,7 @@ grails.project.dependency.resolution = {
 		
 		compile ("net.bull.javamelody:javamelody-core:1.31.0")
 		
-		runtime 'mysql:mysql-connector-java:5.1.13'
+		runtime 'mysql:mysql-connector-java:5.1.5'
 
     }
 	
@@ -100,7 +100,7 @@ grails.project.dependency.resolution = {
 		compile ":compass-sass:0.5.5"
 		compile ":svn:1.0.0.M1"
 		
-		test (":spock:0.6-SNAPSHOT") {changing = false}
+		//test (":spock:0.6-SNAPSHOT") {changing = false}
 		
 		build ":tomcat:$grailsVersion"
 	}

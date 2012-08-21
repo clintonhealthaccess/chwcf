@@ -4,7 +4,8 @@
 		<tr>
 		 	<th></th>
 		    <th><g:message code="list.header.cooperative.health.facility.label" default="Health Facility" /></th>
-			<th><g:message code="entity.list.name.label" default="Name" /></th>
+			<th><g:message code="entity.list.service.name.label" default="Service Name" /></th>
+			<th><g:message code="entity.list.commercial.name.label" default="Commercial Name" /></th>
 			<th><g:message code="entity.list.description.label" default="Description" /></th>
 			<th><g:message code="list.header.cooperative.create.date.label" default="Create Date" /></th>
 			<th><g:message code="list.header.cooperative.registration.number.label" default="Registration Number" /></th>
@@ -43,7 +44,8 @@
 					</ul>
 				</td>
 				<td>${cooperative.organisationUnit.name}</td>
-				<td>${cooperative.name}</td>
+				<td>${cooperative.serviceName}</td>
+				<td>${cooperative.commercialName}</td>
 				<td>${cooperative.description}</td>
 				<td>${Utils.formatDate(cooperative?.createDate)}</td>
 				<td>${cooperative.registrationNumber}</td>
@@ -62,10 +64,10 @@
 										</a>
 									</li>
 								</shiro:hasPermission>
-								<shiro:hasPermission permission="pbfScore:list">
+								<shiro:hasPermission permission="pbf:list">
 									<li>
-										<a href="${createLinkWithTargetURI(controller:'pbfScore', action:'list',params:[cooperative:cooperative?.id])}">
-											<g:message code="list.manage.pbf.scores.label" default="PBF Scores" />										
+										<a href="${createLinkWithTargetURI(controller:'pbf', action:'list',params:[cooperative:cooperative?.id])}">
+											<g:message code="list.manage.pbf.label" default="PBF" />										
 										</a>
 									</li>
 								</shiro:hasPermission>

@@ -125,6 +125,8 @@ log4j = {
 	debug  'grails.app',
 			'org.chai.kevin',
 			'grails.plugin.springcache'
+			
+    trace 'org.hibernate.type'
 
 }
 

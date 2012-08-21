@@ -52,11 +52,19 @@ import org.chai.chwcf.organisation.Cooperative;
 public class Member extends Person {
 	
 	public static enum Gender {
-		UNKNOWN, MALE, FEMALE 
+		UNKNOWN("unknown"), 
+		MALE("male"), 
+		FEMALE("female");
+		
+		String messageCode = "gender";	
+
+		String name;
+		Gender(String name){ this.name=name; }
+		String getKey() { return name(); }
 	};
 
 	private Long id;
-	private Integer idNumber;
+	private Long idNumber;
 	private Cooperative cooperative;
 	private Date joinDate;
 	private Date leftDate;
@@ -74,12 +82,12 @@ public class Member extends Person {
 		this.id = id;
 	}
 
-	public void setIdNumber(Integer idNumber) {
+	public void setIdNumber(Long idNumber) {
 		this.idNumber = idNumber;
 	}
     @Basic(optional=false)
     @Column(nullable=false)
-	public Integer getIdNumber() {
+	public Long getIdNumber() {
 		return idNumber;
 	}
 

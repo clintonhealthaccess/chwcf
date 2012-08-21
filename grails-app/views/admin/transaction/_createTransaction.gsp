@@ -17,19 +17,12 @@
 		
 		<div class="row">
 			<label>Cooperative</label>
-			<input value="${transaction.cooperative.name}" class="idle-field" disabled/>
+			<input value="${transaction.cooperative.serviceName}" class="idle-field" disabled/>
 			<input type="hidden" name="cooperative.id" value="${transaction.cooperative.id}"/>
 		</div>
 		
-		<div class="row">
-			<label>Date of Transaction</label>
-			<input type="text" id="transaction-date" class="idle-field input" name="transactionDate" value="${Utils.formatDate(transaction?.transactionDate)}" ${readonly?'disabled':''}/>
-			<div class="error-list">
-				<g:renderErrors bean="${transaction}" field="transactionDate" />
-			</div>
-			<div class="clear"></div>
-		</div>
-				
+		<g:inputDate name="transactionDate" precision="day" id="transaction-date" value="${transaction?.transactionDate}" label="Date of Transaction" bean="${transaction}" field="transactionDate"/>
+		
 		<div class="row ${hasErrors(bean:transaction, field:'category', 'errors')}">
 			<label for="category.id"><g:message code="admin.create.category.label" default="Category"/></label>
 		    <select id="elements-list" name="category.id" class="ajax-search-field" ${readonly?'disabled':''}>
@@ -95,14 +88,6 @@
 				terms[val.id] = val.category;
 			});
 			return terms;
-		});
-		
-		$('#transaction-date').glDatePicker({
-			onChange : function(target, newDate) {
-				target.val(newDate.getDate() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getFullYear());
-				target.trigger('change')
-			},
-			zIndex : "10"
 		});
 	});					
 </script>

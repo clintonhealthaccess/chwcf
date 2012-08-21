@@ -32,7 +32,8 @@ package org.chai.chwcf.organisation
  *
  */
 constraints = {
-	name(nullable: false, blank: false)
+	serviceName(nullable: false, blank: false)
+	commercialName(nullable: true, blank: true)
 	organisationUnit(nullable: false, blank: false)
 	registrationNumber(nullable: true, blank: true, unique: true)
 	registrationLevel(nullable: false, blank: false)

@@ -3,8 +3,7 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th><g:message code="entity.list.start.date.label" default="Start Date" /></th>
-			<th><g:message code="entity.list.end.date.label" default="End Date" /></th>
+			<th><g:message code="entity.list.year.label" default="Year" /></th>
 			<th><g:message code="list.header.share.share.label" default="Share" /></th>
 			<th><g:message code="list.heade.share.current.label" default="Current" /></th>
 			<th><g:message code="entity.list.description.label" default="Description" /></th>
@@ -31,11 +30,10 @@
 					</shiro:hasPermission>
 					</ul>
 				</td>
-				<td>${Utils.formatDate(share?.startDate)}</td>
-				<td>${Utils.formatDate(share?.endDate)}</td>
+				<td>${Utils.formatDateYear(share?.year)}</td>
 				<td>${share.share}</td>
 				<td>${share?.current?'\u2713':'X'}</td>
-				<td><g:i18n field="${share.names}" /></td>
+				<td><g:i18n field="${share.descriptions}" /></td>
 			</tr>
 		</g:each>
 	</tbody>

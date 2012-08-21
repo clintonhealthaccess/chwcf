@@ -9,20 +9,19 @@
 	<g:form url="[controller:'training', action:'save', params: [targetURI: targetURI]]" useToken="true">
 	<div class="row">
 		<label>Cooperative</label>
-		<input value="${training.cooperative.name}" class="idle-field" disabled/>
+		<input value="${training.cooperative.serviceName}" class="idle-field" disabled/>
 		<input type="hidden" name="cooperative.id" value="${training.cooperative.id}"/>
 		<div class="clear"></div>
-	</div>
+	</div>	
 	<div class="row">
 	    <label>Period</label>
-		<g:inputDate name="startDate" id="start-date" bean="${training}" value="${Utils.formatDate(training?.startDate)}" label="Start Date" field="startDate" />
-		<g:inputDate name="endDate" id="end-date" bean="${training}" value="${Utils.formatDate(training?.endDate)}" label="End Date:" field="endDate" />
-		<div class="clear"></div>
+	    <g:inputDate name="startDate" precision="day" id="start-date" value="${training?.startDate}" label="Start Date" bean="${training}" field="startDate"/>
+	     <g:inputDate name="endDate" precision="day" id="end-date" value="${training?.endDate}" label="End Date" bean="${training}" field="endDate"/>
+	    <div class="clear"></div>
 	</div>
 	<g:input name="provider" bean="${training}" value="${training?.provider}" label="Organiser" field="provider" />
 	<g:input name="location" bean="${training}" value="${training?.location}" label="Location" field="location" />
-	<g:i18nTextarea name="names" bean="${training}" value="${training?.names}" label="Descriptions" field="names" />
-    <g:input name="order" label="Order" value="${training?.order}" bean="${training}" field="order"/>
+	<g:i18nTextarea name="descriptions" bean="${training}" value="${training?.descriptions}" label="Descriptions" field="descriptions" />
 	<g:if test="${training.id != null}">
 		<input type="hidden" name="id" value="${training.id}"/>
 	</g:if>
@@ -37,21 +36,3 @@
 	</g:form>
 	<div class="clear"></div>
 </div>
-<script type="text/javascript">
-	$(document).ready(function() {				
-		$('#start-date').glDatePicker({
-			onChange : function(target, newDate) {
-				target.val(newDate.getDate() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getFullYear());
-				target.trigger('change')
-			},
-			zIndex : "10"
-		});
-		$('#end-date').glDatePicker({
-			onChange : function(target, newDate) {
-				target.val(newDate.getDate() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getFullYear());
-				target.trigger('change')
-			},
-			zIndex : "10"
-		});
-	});					
-</script>

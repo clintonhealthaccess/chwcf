@@ -70,6 +70,11 @@ public class Utils {
 		return DATE_FORMAT.format(date);
 	}
 	
+	public static String formatDateYear(Date date) {
+		if (date == null) return null;
+		return DATE_FORMAT_YEAR.format(date);
+	}
+	
 	public static Date parseDate(String string){
 		try {
 			return DATE_FORMAT.parse(string);
@@ -112,6 +117,8 @@ public class Utils {
 	}
 
 	private static DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+	
+	private static DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy");
 	
 	public static DateFormat REPORT_DATE_FORMAT = new SimpleDateFormat("MM-yyyy");
 

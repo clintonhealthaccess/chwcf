@@ -36,7 +36,7 @@ constraints = {
 	cooperative(nullable: false)
 	category(nullable: false)
 	enteredBy(nullable: false)
-	amount(nullable: false, blank: false, min: 1)
+	amount(nullable: false, blank: false, min: 0L)
 	transactionDate(nullable:false,validator:{it <= new Date()})
 	recordedDate(nullable:false,validator: {  val, obj -> return (val?.after(obj.transactionDate) || val?.equals(obj.transactionDate))})
 	approval(nullable: true)

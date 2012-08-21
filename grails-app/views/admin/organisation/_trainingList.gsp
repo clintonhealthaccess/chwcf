@@ -3,7 +3,6 @@
 	<thead>
 		<tr>
 			<th></th>
-			<th>Order</th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Trainer</th>
@@ -32,12 +31,11 @@
 						</shiro:hasPermission>
 					</ul>
 				</td>
-				<td>${training?.order}</td>
 				<td>${Utils.formatDate(training?.startDate)}</td>
 				<td>${Utils.formatDate(training?.endDate)}</td>
 				<td>${training?.provider}</td>
 				<td>${training?.location}</td>
-				<td><g:i18n field="${training.names}" /></td>
+				<td><g:i18n field="${training.descriptions}" /></td>
 			</tr>
 		</g:each>
 	</tbody>

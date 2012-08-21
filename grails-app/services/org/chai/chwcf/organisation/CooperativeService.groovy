@@ -84,7 +84,8 @@ class CooperativeService {
 		List<Cooperative> cooperatives = Cooperative.list();
 		StringUtils.split(text).each { chunk ->
 			cooperatives.retainAll { cooperative ->
-				Utils.matches(chunk, cooperative.name) ||
+				Utils.matches(chunk, cooperative.commercialName) ||
+				Utils.matches(chunk, cooperative.serviceName) ||
 				Utils.matches(chunk, cooperative.organisationUnit.name)
 			}
 		}

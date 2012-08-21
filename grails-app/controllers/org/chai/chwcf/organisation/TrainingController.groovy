@@ -28,7 +28,9 @@
 package org.chai.chwcf.organisation
 
 import org.chai.chwcf.AbstractEntityController;
+import org.chai.chwcf.Translation
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.chai.chwcf.transaction.Transaction
 import org.chai.chwcf.utils.Utils;
 
 /**
@@ -60,22 +62,12 @@ class TrainingController extends AbstractEntityController {
 	}
 	
 	def bindParams(def entity) {
-		bindData(entity,params,[exclude:['startDate','endDate']])
-		
-		//FIXME If you find better solution to do this please feel free to fix
-		if(params.startDate!='' && params.startDate!=null){
-			entity.startDate=Utils.parseDate(params.startDate);
-		}else
-			entity.startDate=null;
-			
-		if(params.endDate!='' && params.endDate!=null){
-			entity.endDate=Utils.parseDate(params.endDate);
-		}else
-			entity.endDate=null;
+		entity.properties = params
 		
 		// FIXME GRAILS-6967 makes this necessary
 		// http://jira.grails.org/browse/GRAILS-6967
-		if (params.names!=null) entity.names = params.names
+		if (params.descriptions!=null) entity.descriptions = params.descriptions
+		entity.names =["en":""]
 	}
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : ConfigurationHolder.config.site.entity.list.max, 20)
