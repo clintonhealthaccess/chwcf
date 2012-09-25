@@ -15,12 +15,13 @@
 		<div class="main">
 			<div class="cooperative-identifier">
 				<h6>Identification</h6>
-				<div class="left-coop-id"><label>Name:</label> ${cooperative.name}</div>
+				<div class="left-coop-id"><label>Service Name:</label> ${cooperative.serviceName}</div>
 				<div class="right-coop-id"><label>Facility:</label> ${cooperative.organisationUnit.name}</div>
-				<div class="left-coop-id"><label>RegistrationNumber:</label> ${cooperative.registrationNumber}</div>
+				<div class="left-coop-id"><label>Commercial Name:</label> ${cooperative.commercialName}</div>
 				<div class="right-coop-id"><label>Created On:</label> ${cooperative.createDate}</div>
-				<div class="left-coop-id"><label>Registration Level:</label> <g:i18n field="${cooperative.registrationLevel.names}" /></div>
+				<div class="left-coop-id"><label>RegistrationNumber:</label> ${cooperative.registrationNumber}</div>
 				<div class="right-coop-id"><label>Description:</label> ${cooperative.description}</div>
+				<div class="left-coop-id"><label>Registration Level:</label> <g:i18n field="${cooperative.registrationLevel.names}" /></div>
 				<div class="clear"></div>
 			</div>
 			<div class="clear"></div>
@@ -54,21 +55,25 @@
 					<table class="listing">
 						<thead>
 							<tr>
+								<th>Type</th>
 								<th>Start Date</th>
 								<th>End Date</th>
 								<th>Score</th>
 								<th>Amount From HC to Cooperative</th>
 								<th>Description</th>
+								
 							</tr>
 						</thead>
 						<tbody>
-							<g:each in="${cooperative.scores}" status="i" var="score">
+							<g:each in="${cooperative.scores}" status="i" var="pbf">
 								<tr>
-									<td>${Utils.formatDate(score?.startDate)}</td>
-									<td>${Utils.formatDate(score?.endDate)}</td>
-									<td>${score?.score}</td>
-									<td>${score.amountHCtoCoop}</td>
-									<td><g:i18n field="${score.names}" /></td>
+									<td><g:i18n field="${pbf.type.names}" /></td>
+									<td>${Utils.formatDate(pbf?.startDate)}</td>
+									<td>${Utils.formatDate(pbf?.endDate)}</td>
+									<td>${pbf.amoutMohToHC}</td>
+									<td>${pbf.amountSousCompte}</td>
+									<td>${pbf.amountHCtoCoop}</td>
+									
 								</tr>
 							</g:each>
 						</tbody>
@@ -84,8 +89,7 @@
 					<table class="listing">
 						<thead>
 							<tr>
-								<th>Start Date</th>
-								<th>End Date</th>
+								<th>Year</th>
 								<th>Share</th>
 								<th>Current</th>
 								<th>Descriptions</th>
@@ -94,11 +98,10 @@
 						<tbody>
 							<g:each in="${cooperative.shares}" status="i" var="share">
 								<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-									<td>${Utils.formatDate(share?.startDate)}</td>
-									<td>${Utils.formatDate(share?.endDate)}</td>
+									<td>${Utils.formatDateYear(share?.year)}</td>
 									<td>${share.share}</td>
 									<td>${share?.current?'\u2713':'X'}</td>
-									<td><g:i18n field="${share.names}" /></td>
+									<td><g:i18n field="${share.descriptions}" /></td>
 								</tr>
 							</g:each>
 						</tbody>
@@ -114,9 +117,9 @@
 					<table class="listing">
 						<thead>
 							<tr>
-								<th>Order</th>
 								<th>Date</th>
 								<th>Supervisor</th>
+								<th>From</th>
 								<th>Location</th>
 								<th>Descriptions</th>
 							</tr>
@@ -124,11 +127,11 @@
 						<tbody>
 							<g:each in="${cooperative.supervisions}" status="i" var="supervision">
 								<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-									<td>${supervision?.order}</td>
 									<td>${Utils.formatDate(supervision?.date)}</td>
 									<td>${supervision?.supervisor}</td>
+									<td>${supervision?.source}</td>
 									<td>${supervision?.location}</td>
-									<td><g:i18n field="${supervision.names}" /></td>
+									<td><g:i18n field="${supervision.descriptions}" /></td>
 								</tr>
 							</g:each>
 						</tbody>
@@ -144,7 +147,6 @@
 					<table class="listing">
 						<thead>
 							<tr>
-								<th>Order</th>
 								<th>Start Date</th>
 								<th>End Date</th>
 								<th>Trainer</th>
@@ -155,12 +157,11 @@
 						<tbody>
 							<g:each in="${cooperative.trainings}" status="i" var="training">
 								<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-									<td>${training?.order}</td>
 									<td>${Utils.formatDate(training?.startDate)}</td>
 									<td>${Utils.formatDate(training?.endDate)}</td>
 									<td>${training?.provider}</td>
 									<td>${training?.location}</td>
-									<td><g:i18n field="${training.names}" /></td>
+									<td><g:i18n field="${training.descriptions}" /></td>
 								</tr>
 							</g:each>
 						</tbody>

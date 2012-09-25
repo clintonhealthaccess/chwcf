@@ -21,7 +21,7 @@
 			<g:renderErrors bean="${cooperative}" field="organisationUnit" />
 		</div>
 	</div>
-	<g:inputDate name="createDate" bean="${cooperative}" value="${Utils.formatDate(cooperative?.createDate)}" label="Created on" field="createDate" />
+	<g:inputDate name="createDate" precision="day" id="create-date" value="${cooperative?.createDate}" label="Created on" bean="${cooperative}" field="createDate"/>
     <g:input name="serviceName" label="Service Name" bean="${cooperative}" value="${cooperative.serviceName}" field="serviceName"/>
     <g:input name="commercialName" label="Commercial Name" bean="${cooperative}" value="${cooperative.commercialName}" field="commercialName"/>
     <g:textarea name="description" bean="${cooperative}" rows="10" value="${cooperative?.description}" label="Description" field="description" />
@@ -84,12 +84,5 @@
 			});
 			return terms;
 		});	
-		$('#date-field-one').glDatePicker({
-			onChange : function(target, newDate) {
-				target.val(newDate.getDate() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getFullYear());
-				target.trigger('change')
-			},
-			zIndex : "10"
-		});
 	});					
 </script>

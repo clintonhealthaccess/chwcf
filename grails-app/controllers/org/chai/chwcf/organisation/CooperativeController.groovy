@@ -91,12 +91,7 @@ class CooperativeController extends AbstractEntityController {
 	}
 
 	def bindParams(def entity) {
-		bindData(entity,params,[exclude:['createDate']])
-				
-		if(params.createDate!='' && params.createDate!=null){
-			entity.createDate=Utils.parseDate(params.createDate);
-		}else
-			entity.createDate=null;
+		entity.properties=params
 	}
 	
 	def list = {

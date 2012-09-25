@@ -221,7 +221,7 @@ class ReportController {
 				
 				for(int n=reportHeaders.size()-1;n>=0;n--){
 					if(n+1 == reportHeaders.size())
-						this.addDataToCell(excelSheet, n, c+1,reportTable.getCooperatives()[c].name);
+						this.addDataToCell(excelSheet, n, c+1,reportTable.getCooperatives()[c].serviceName);
 					else{	
 						this.addDataToCell(excelSheet, n, c+1,tmp.name);
 						if(tmp.getParent()!=null){
